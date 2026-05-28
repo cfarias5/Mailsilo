@@ -25,9 +25,6 @@ MAX_EMAIL_SIZE = 25 * 1024 * 1024  # 25 MB
 BATCH_SIZE = 50
 
 
-from app.services.fetch import fetch_service
-
-
 class FetchCancelled(Exception):
     pass
 
@@ -38,6 +35,7 @@ class FetchCancelled(Exception):
 
 
 def _write_progress(account_id: int, current: int, total: int, folder: str, total_fetched: int = 0, year: int | None = None, year_current: int = 0, year_total: int = 0):
+    from app.services.fetch import fetch_service
     payload = {
         "status": "running",
         "current": current,
@@ -60,7 +58,7 @@ def _clear_progress(account_id: int):
 
 
 def _is_cancelled(account_id: int) -> bool:
-    # Ahora verificamos el estado en Redis
+    from app.services.fetch import fetch_service
     status = fetch_service.get_status(account_id)
     return status.get("status") == "cancelled"
 

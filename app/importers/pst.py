@@ -5,6 +5,8 @@ import tempfile
 from pathlib import Path
 from typing import Callable, Optional
 
+from app.importers.eml import import_eml
+
 
 def _check_readpst() -> bool:
     try:

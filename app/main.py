@@ -106,7 +106,7 @@ async def lifespan(app: FastAPI):
     logger.info("MailSilo stopped")
 
 
-app = FastAPI(title="MailSilo", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="MailSilo", version="0.1.1", lifespan=lifespan)
 
 # Public routers (no auth required)
 app.include_router(auth.router)

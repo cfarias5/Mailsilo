@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from datetime import datetime, timezone
 from sqlalchemy import String, Text, DateTime, Integer, LargeBinary
 from sqlalchemy.orm import Mapped, mapped_column
@@ -7,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 
 
-ATTACHMENT_STORAGE = "/app/storage/attachments"
+ATTACHMENT_STORAGE = os.environ.get("ATTACHMENT_STORAGE", "/app/storage/attachments")
 
 
 class Attachment(Base):

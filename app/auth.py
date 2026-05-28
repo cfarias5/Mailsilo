@@ -25,7 +25,7 @@ def _hash_password(password: str) -> str:
 
 
 def _verify_password_old(password: str, stored_hash: str, salt: str) -> bool:
-    import hashlib, secrets
+    import hashlib
     key = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100000)
     return secrets.compare_digest(key.hex(), stored_hash)
 

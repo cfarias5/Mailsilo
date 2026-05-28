@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import logging
+
 from cryptography.fernet import Fernet
 
 from app.models import Setting
 from app.database import get_session
+
+logger = logging.getLogger(__name__)
 
 _fernet: Fernet | None = None
 
@@ -40,5 +44,6 @@ def decrypt(ciphertext: str) -> str:
         return ""
     try:
         return _get_fernet().decrypt(ciphertext.encode()).decode()
-    except Exception:
+    except Exception as e:
+        logger.warning("Decryption failed: %s", e)
         return ciphertext

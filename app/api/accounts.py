@@ -26,7 +26,6 @@ from app.api.deps import get_current_user
 from app.api.oauth_microsoft import PENDING_OAUTH_TOKENS
 from app.database import get_session
 from app.models import Email, Account, Attachment
-from app.api.deps import get_current_user
 from app.services.fetch import fetch_service
 from app.crypto import encrypt, decrypt
 
