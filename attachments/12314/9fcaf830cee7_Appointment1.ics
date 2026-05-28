@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+PRODID:-//44.238.174.103//NONSGML iCalcreator 2.6//
+VERSION:2.0
+BEGIN:VEVENT
+UID:1256239486@scheduling
+DTSTAMP:20240506T142532Z
+DESCRIPTION:Client time zone: America/New_York\n\nChange Appointment: https
+ ://app.acuityscheduling.com/schedule.php?owner=14866757&action=appt&id%5B%
+ 5D=7ec3c826210318c3c4b01372ba6a322f&ref=calendar\n
+DTSTART:20240516T130000Z
+DTEND:20240516T133000Z
+LOCATION:318 N John Young Pkwy\, Suite 1\, Kissimmee\, Fl 34741
+SUMMARY:Vitalis Wellness Center: Lab Work (Vitalis Wellness Center)
+END:VEVENT
+END:VCALENDAR

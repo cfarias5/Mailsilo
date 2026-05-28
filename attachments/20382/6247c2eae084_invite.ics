@@ -1,0 +1,64 @@
+BEGIN:VCALENDAR
+PRODID:-//Google Inc//Google Calendar 70.9054//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VTIMEZONE
+TZID:America/Los_Angeles
+X-LIC-LOCATION:America/Los_Angeles
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0800
+TZOFFSETTO:-0700
+TZNAME:PDT
+DTSTART:19700308T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0700
+TZOFFSETTO:-0800
+TZNAME:PST
+DTSTART:19701101T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+BEGIN:VEVENT
+DTSTART;TZID=America/Los_Angeles:20201102T180000
+DTEND;TZID=America/Los_Angeles:20201102T184500
+DTSTAMP:20201102T020343Z
+ORGANIZER;CN=ruben@careerkarma.com:mailto:ruben@careerkarma.com
+UID:skt1ijbhs7evsd96snc7og6u8i_R20200701T010000@google.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=
+ TRUE;CN=cfarias5@icloud.com;X-NUM-GUESTS=0:mailto:cfarias5@icloud.com
+X-MICROSOFT-CDO-OWNERAPPTID:-48613865
+RECURRENCE-ID;TZID=America/Los_Angeles:20201102T180000
+CREATED:20190911T163218Z
+DESCRIPTION:Hi fam\,<br><br>Your <b>Career Karma's Head Coaching Kickoff</b
+ > with Ruben Harris is scheduled!<br><br>How many CEO's of tech companies a
+ ctually take the time to speak to their users?&nbsp\;<br><br>Do you want to
+  find out how to get a new career in tech?&nbsp\;<br><br>On this Live Onlin
+ e Event\, you'll get <b>personally mentored by the CEO of Career Karma</b>\
+ , discover study partners and find out the best learning resources for begi
+ nners!<br><br><b>Link to join:</b> <a href="https://zoom.us/j/5299686761">h
+ ttps://zoom.us/j/5299686761</a><br><br>Location: <u>This is a Zoom online w
+ eb conference.</u><br><br>You can join this meeting from your computer\, ta
+ blet\, or smartphone. Make sure to have the Zoom App downloaded beforehand.
+ &nbsp\;<br><br><b>Link to join:</b> <a href="https://zoom.us/j/5299686761">
+ https://zoom.us/j/5299686761</a><br><br>──────────<br><br>One tap mobile<br
+ >+16465588656\,\,5299686761# US (New York)<br><br>Dial by your location<br>
+ &nbsp\; &nbsp\; &nbsp\; &nbsp\; +1 646 558 8656 US (New York)<br>Meeting ID
+ : 529 968 6761<br><br>──────────\n\n-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~
+ :~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-\nPlease do not edit this s
+ ection of the description.\n\nView your event at https://www.google.com/cal
+ endar/event?action=VIEW&eid=c2t0MWlqYmhzN2V2c2Q5NnNuYzdvZzZ1OGlfMjAyMDExMDN
+ UMDIwMDAwWiBjZmFyaWFzNUBpY2xvdWQuY29t&tok=MjEjcnViZW5AY2FyZWVya2FybWEuY29tZ
+ WI2OTBjNDQ3MTRjYjdhNDUzOTUzODY5YzVjNzA1N2YzNjIyZWYxZg&ctz=America%2FLos_Ang
+ eles&hl=en&es=1.\n-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~
+ :~:~:~:~:~:~:~:~:~:~:~::~:~::-
+LAST-MODIFIED:20201102T020333Z
+LOCATION:https://zoom.us/j/5299686761
+SEQUENCE:3
+STATUS:CONFIRMED
+SUMMARY:Career Karma's Head Coaching Kick-Off
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR

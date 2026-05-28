@@ -1,0 +1,24 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//appointlet.com//Appointlet//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+SUMMARY:Monthly Box Of Blessings w/CCAP Pantry
+DTSTART;VALUE=DATE-TIME:20211026T155000Z
+DTEND;VALUE=DATE-TIME:20211026T155500Z
+UID:9838053
+CREATED;VALUE=DATE-TIME:20211026T141703Z
+DESCRIPTION:--- Meeting Location ---\n12 S. Orlando Ave. Kissimmee\, Fl. 3
+ 4741\n\n--- Cancel/Reschedule ---\nhttps://ccap.appointlet.com/booking/G2M
+ BKgPp\n\n--- Meeting type ---\nMonthly Box Of Blessings - assist with a le
+ gal consultation at no fee with Sonimar Lozada\n\n--- Pantry ---\nCCAP Pan
+ try - Monthly pantry Use first time choice - ONLY if you have never been t
+ o the pantry please\n\n--- Your Information ---\nEmail: cfarias5@icloud.co
+ m\nFirst Name: cesar\nLast Name: arias\nAddress: 11 E Park St\nPhone Numbe
+ r: 9738768049\nOsceola County Resident: True\nFamily Size: 3\nQUE SERVICO 
+ NESECITAS ? WHAT SERVICE DO YOU NEED/: 
+LOCATION:12 S. Orlando Ave. Kissimmee\, Fl. 34741
+ORGANIZER;CN=CCAP:notifications@appointlet.com
+URL:https://ccap.appointlet.com/booking/G2MBKgPp
+END:VEVENT
+END:VCALENDAR

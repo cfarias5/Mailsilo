@@ -1,0 +1,24 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//appointlet.com//Appointlet//EN
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+SUMMARY:Monthly Box Of Blessings w/CCAP Pantry
+DTSTART;VALUE=DATE-TIME:20220415T152000Z
+DTEND;VALUE=DATE-TIME:20220415T152500Z
+UID:11329248
+CREATED;VALUE=DATE-TIME:20220412T162522Z
+DESCRIPTION:--- Meeting Location ---\n12 S. Orlando Ave. Kissimmee\, Fl. 3
+ 4741\n\n--- Cancel/Reschedule ---\nhttps://ccap.appointlet.com/booking/U3Z
+ OpILF\n\n--- Meeting type ---\nMonthly Box Of Blessings - Punch Card REQUI
+ RED. No Exception! TARJETA PERFORADA REQUERIDA. ¡Sin excepción!\n\n--- A
+ ccess. benefit ---\nCCAP Pantry - Monthly pantry ONLY both new and current
+  members. solo para Baja de Bendiciones.\n\n--- Your Information ---\nEmai
+ l: cfarias5@icloud.com\nFirst Name: Cesar\nLast Name: Arias\nAddress: 11 E
+  Park St\nPhone Number: 9738768049\nOsceola County Resident: True\nFamily 
+ Size: 3\nQUE SERVICO NESECITAS ? WHAT SERVICE DO YOU NEED/: 
+LOCATION:12 S. Orlando Ave. Kissimmee\, Fl. 34741
+ORGANIZER;CN=CCAP:notifications@appointlet.com
+URL:https://ccap.appointlet.com/booking/U3ZOpILF
+END:VEVENT
+END:VCALENDAR

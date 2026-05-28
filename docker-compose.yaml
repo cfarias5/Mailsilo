@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5477:5432"
+    container_name: mailsilo-db
+    environment:
+      POSTGRES_DB: mailsilo
+      POSTGRES_USER: mailsilo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - mailsilo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mailsilo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mailsilo:
+    build: .
+    container_name: mailsilo
+    ports:
+      - "8765:8765"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=postgresql://mailsilo:${POSTGRES_PASSWORD}@postgres:5432/mailsilo
+    volumes:
+      - mailsilo_data:/app/data
+      - attachments_data:/app/storage/attachments
+    restart: unless-stopped
+    networks:
+      - mailsilo
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  cloudflare:
+    image: cloudflare/cloudflared:latest
+    container_name: mailsilo-tunnel
+    restart: always
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    networks:
+      - mailsilo
+
+networks:
+  mailsilo:
+    name: mailsilo
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mailsilo_data:
+  attachments_data:

@@ -1,0 +1,37 @@
+BEGIN:VCALENDAR
+PRODID:-//Google Inc//Google Calendar 70.9054//EN
+VERSION:2.0
+CALSCALE:GREGORIAN
+METHOD:REQUEST
+BEGIN:VEVENT
+DTSTART:20220411T143000Z
+DTEND:20220411T150000Z
+DTSTAMP:20220408T190241Z
+ORGANIZER;CN=danielle@shipveho.com:mailto:danielle@shipveho.com
+UID:tei19v3kgdf52eh0psub51p0u8@google.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=TRUE
+ ;CN=danielle@shipveho.com;X-NUM-GUESTS=0:mailto:danielle@shipveho.com
+ATTENDEE;CUTYPE=INDIVIDUAL;ROLE=REQ-PARTICIPANT;PARTSTAT=ACCEPTED;RSVP=TRUE
+ ;CN=cfarias5@icloud.com;X-NUM-GUESTS=0:mailto:cfarias5@icloud.com
+X-MICROSOFT-CDO-OWNERAPPTID:674525357
+CREATED:20220408T190241Z
+DESCRIPTION:Event Name: Phone Screen\n\nThis call is just to go over your e
+ xperience and discuss your career goals.\n\nLocation: +1 973-876-8049\n\nNe
+ ed to make changes to this event?\nCancel: https://calendly.com/cancellatio
+ ns/fc1eeac9-2772-42f0-abbb-79ace93275c4\nReschedule: https://calendly.com/r
+ eschedulings/fc1eeac9-2772-42f0-abbb-79ace93275c4\n\nPowered by Calendly.co
+ m\n\n\n-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:
+ ~:~:~:~:~:~::~:~::-\nDo not edit this section of the description.\n\nView y
+ our event at https://calendar.google.com/calendar/event?action=VIEW&eid=dGV
+ pMTl2M2tnZGY1MmVoMHBzdWI1MXAwdTggY2ZhcmlhczVAaWNsb3VkLmNvbQ&tok=MjEjZGFuaWV
+ sbGVAc2hpcHZlaG8uY29tNzQ1ODU4NDlhYmIwMWFjMDllNTA2OWE4MTMwNDRiNDFlOWRhODZjZQ
+ &ctz=America%2FChicago&hl=en&es=1.\n-::~:~::~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~
+ :~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~:~::~:~::-
+LAST-MODIFIED:20220408T190241Z
+LOCATION:+1 973-876-8049
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Cesar Arias and Danielle McDougal
+TRANSP:OPAQUE
+END:VEVENT
+END:VCALENDAR
