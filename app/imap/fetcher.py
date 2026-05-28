@@ -461,12 +461,22 @@ def _microsoft_access_token(account: Account) -> str | None:
 
 
 def _connect_imap(account: Account) -> IMAPClient:
+    import socket
     server = account.imap_server
     port = account.imap_port or 993
     use_ssl = account.imap_use_ssl
     username = account.username or account.email
 
-    client = IMAPClient(server, port=port, ssl=use_ssl, timeout=30)
+    addrs = socket.getaddrinfo(server, port, socket.AF_INET, socket.SOCK_STREAM)
+    host_ip = addrs[0][4][0]
+
+    sock = socket.create_connection((host_ip, port), timeout=30)
+    if use_ssl:
+        import ssl
+        ctx = ssl.create_default_context()
+        sock = ctx.wrap_socket(sock, server_hostname=server)
+
+    client = IMAPClient(server, use_uid=True, ssl=False, stream=sock, timeout=30)
 
     if account.uses_oauth:
         if account.oauth_provider == "microsoft":
@@ -605,7 +615,15 @@ def _list_folders_from_client(client: IMAPClient) -> list[str]:
 
 def list_folders(server: str, port: int = 993, use_ssl: bool = True, username: str = "", password: str = "", account: Account | None = None) -> list[str]:
     try:
-        client = IMAPClient(server, port=port, ssl=use_ssl, timeout=30)
+        import socket
+        addrs = socket.getaddrinfo(server, port, socket.AF_INET, socket.SOCK_STREAM)
+        host_ip = addrs[0][4][0]
+        sock = socket.create_connection((host_ip, port), timeout=30)
+        if use_ssl:
+            import ssl
+            ctx = ssl.create_default_context()
+            sock = ctx.wrap_socket(sock, server_hostname=server)
+        client = IMAPClient(server, use_uid=True, ssl=False, stream=sock, timeout=30)
 
         if account and account.uses_oauth:
             from app.api.oauth_microsoft import refresh_microsoft_token
