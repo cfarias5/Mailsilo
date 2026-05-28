@@ -221,7 +221,7 @@ input, textarea, select {
   flex-shrink: 0;
 }
 .list-panel-body {
-  flex: 1; overflow-y: auto; padding: 1rem;
+  flex: 1; overflow-y: auto; padding: 1.25rem;
 }
 
 /* Email list */
@@ -745,12 +745,39 @@ button.primary:disabled, .primary:disabled {
 ::-webkit-scrollbar-thumb { background: var(--surface-2); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
 
+/* =============================== PAGE HEADERS =============================== */
+.page-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 1.25rem;
+  padding: 0.25rem 0;
+}
+.page-header h2 {
+  font-size: 1.05rem; font-weight: 600;
+  margin: 0;
+}
+.page-header p {
+  font-size: .82rem; color: var(--text-tertiary);
+  margin: 0.25rem 0 0 0;
+}
+.page-header-body {
+  margin-bottom: 1.25rem;
+}
+.page-header-body h2 {
+  font-size: 1.05rem; font-weight: 600;
+  margin: 0 0 0.35rem 0;
+}
+.page-header-body p {
+  font-size: .82rem; color: var(--text-tertiary);
+  margin: 0;
+}
+
 /* =============================== ACCOUNTS PAGE =============================== */
 .accounts-header {
   display: flex; justify-content: space-between; align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.25rem 0;
 }
-.accounts-header h2 { font-size: 1rem; font-weight: 600; }
+.accounts-header h2 { font-size: 1.05rem; font-weight: 600; margin: 0; }
 
 .accounts-list {
   display: flex; flex-direction: column; gap: .6rem;
@@ -924,7 +951,7 @@ button.primary:disabled, .primary:disabled {
   margin-bottom: 1.5rem;
 }
 .import-header h2 {
-  font-size: 1.15rem; font-weight: 600; margin-bottom: .5rem;
+  font-size: 1.05rem; font-weight: 600; margin: 0 0 .5rem 0;
 }
 .import-header p {
   font-size: .82rem; color: var(--text-tertiary); margin: 0;

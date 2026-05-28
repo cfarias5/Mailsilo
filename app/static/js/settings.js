@@ -32,7 +32,7 @@ async function renderSettings() {
   const pwPlaceholder = smtp.has_password ? "•••••••• (dejar vacío para mantener)" : "";
 
   $("#listPanelBody").innerHTML = `
-    <div style="padding:0 .25rem">
+      <div class="page-header"><h2>⚙️ Configuración</h2></div>
 
       <div class="settings-section">
         <h3>🎨 Apariencia</h3>
@@ -315,7 +315,7 @@ async function renderSettings() {
       <div class="settings-section">
         <h3>ℹ️ Acerca de</h3>
         <div class="settings-about">
-          <strong>MailSilo v1.0.0</strong><br><br>
+          <strong>MailSilo v0.1.1</strong><br><br>
           <em>El archivador inteligente que libera espacio en tu bandeja de entrada.</em><br><br>
           MailSilo es una solución de código abierto diseñada para respaldar, organizar y proteger tus correos electrónicos de forma local y segura. Descarga tus mensajes y adjuntos pesados para liberar espacio en la nube y evitar pagar suscripciones de almacenamiento adicionales.<br><br>
           <strong>Desarrollado por:</strong><br>
@@ -333,8 +333,6 @@ async function renderSettings() {
           <a href="https://buymeacoffee.com/cfarias5" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" style="height:48px;border-radius:6px"></a>
         </div>
       </div>
-
-    </div>
   `;
 }
 

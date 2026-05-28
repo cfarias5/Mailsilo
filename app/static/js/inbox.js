@@ -372,7 +372,7 @@ async function renderSearch() {
   setSplitView(false);
   setListTitle("Buscar", "");
   showDetailEmpty();
-  let html = `<h2 style="margin-bottom:1.25rem;font-size:1.1rem;font-weight:600">🔍 Buscar correos</h2>
+  let html = `<div class="page-header-body"><h2>🔍 Buscar correos</h2></div>
   <div class="search-bar">
     <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
     <input type="text" id="searchInput" placeholder="Buscar por asunto, remitente o contenido..." value="${esc(state.query)}" autofocus>
