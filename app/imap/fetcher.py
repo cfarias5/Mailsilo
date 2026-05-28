@@ -293,168 +293,145 @@ def _fetch_folder(client: IMAPClient, account: Account, folder_name: str, total_
         year_chunks: list[tuple[int | None, list[int]]] = [(None, new_uids)]
     else:
         logger.info("Full folder fetch: %d messages", total_msgs)
-        if total_msgs > 2000:
-            # Fetch in yearly chunks — each year is a separate progress group
-            import datetime as _dt
-            current_year = _dt.datetime.now(_dt.timezone.utc).year
-            year_chunks = []
-            for y in range(current_year, 2009, -1):
-                try:
-                    year_uids = client.search([
-                        "SINCE", f"1-Jan-{y}",
-                        "BEFORE", f"1-Jan-{y + 1}",
-                        "NOT", "DELETED",
-                    ])
-                    if year_uids:
-                        logger.info("  Year %d: %d messages", y, len(year_uids))
-                        year_chunks.append((y, year_uids))
-                except Exception as e:
-                    logger.error("  Year %d search failed: %s", y, e)
-        else:
-            year_chunks = [(None, list(all_uids))]
+        year_chunks = [(None, list(all_uids))]
 
     session = get_session()
     count = 0
 
     try:
-        for chunk_year, fetch_uids in year_chunks:
-            year_total = len(fetch_uids)
-            year_done = 0
+        fetch_uids = year_chunks[0][1]
+        total_to_fetch = len(fetch_uids)
 
-            for i in range(0, len(fetch_uids), BATCH_SIZE):
-                _check_cancelled(account.id)
-                batch = fetch_uids[i : i + BATCH_SIZE]
+        for i in range(0, total_to_fetch, BATCH_SIZE):
+            _check_cancelled(account.id)
+            batch = fetch_uids[i : i + BATCH_SIZE]
 
-                responses = client.fetch(
-                    batch,
-                    ["BODY.PEEK[HEADER]", "RFC822.SIZE"],
+            responses = client.fetch(
+                batch,
+                ["BODY.PEEK[HEADER]", "RFC822.SIZE"],
+            )
+
+            # Separate new vs duplicate
+            new_uids_batch: list[int] = []
+            existing_ids: set[str] = set()
+
+            for uid_val, data in responses.items():
+                if data.get(b"RFC822.SIZE", 0) > MAX_EMAIL_SIZE:
+                    logger.warning("Skipping UID %d — size %d exceeds limit", uid_val, data.get(b"RFC822.SIZE", 0))
+                    continue
+
+                header_raw = data.get(b"BODY[HEADER]")
+                if not header_raw:
+                    continue
+
+                hdr_msg = email.message_from_bytes(header_raw)
+                msg_id = _get_msg_id(hdr_msg)
+                if not msg_id:
+                    msg_id = _make_fallback_id(header_raw)
+
+                exists = (
+                    session.query(Email)
+                    .filter(
+                        Email.account_id == account.id,
+                        Email.message_id == msg_id,
+                        Email.folder == folder_name,
+                    )
+                    .first()
                 )
+                if exists:
+                    existing_ids.add(msg_id)
+                    if exists.uid is None:
+                        exists.uid = uid_val
+                        exists.uidvalidity = uidvalidity
+                    continue
 
-                # Separate new vs duplicate
-                new_uids_batch: list[int] = []
-                existing_ids: set[str] = set()
+                was_deleted = (
+                    session.query(DeletedEmail)
+                    .filter(
+                        DeletedEmail.account_id == account.id,
+                        DeletedEmail.message_id == msg_id,
+                        DeletedEmail.folder == folder_name,
+                    )
+                    .first()
+                )
+                if was_deleted:
+                    continue
 
-                for uid_val, data in responses.items():
-                    if data.get(b"RFC822.SIZE", 0) > MAX_EMAIL_SIZE:
-                        logger.warning("Skipping UID %d — size %d exceeds limit", uid_val, data.get(b"RFC822.SIZE", 0))
+                new_uids_batch.append(uid_val)
+
+            if new_uids_batch:
+                body_responses = client.fetch(new_uids_batch, ["BODY.PEEK[]"])
+
+                for uid_val in new_uids_batch:
+                    body_data = body_responses.get(uid_val, {})
+                    raw_bytes = body_data.get(b"BODY[]")
+                    if not raw_bytes:
                         continue
 
-                    header_raw = data.get(b"BODY[HEADER]")
-                    if not header_raw:
-                        continue
+                    msg = email.message_from_bytes(raw_bytes)
 
-                    hdr_msg = email.message_from_bytes(header_raw)
-                    msg_id = _get_msg_id(hdr_msg)
+                    subject = _decode_mime(msg.get("Subject", ""))
+                    sender_raw = str(msg.get("From", ""))
+                    sender_name, sender_email = _parse_address(sender_raw)
+                    to_raw = str(msg.get("To", ""))
+                    cc_raw = str(msg.get("Cc", ""))
+                    bcc_raw = str(msg.get("Bcc", ""))
+                    date_str = str(msg.get("Date", "") or "")
+                    date = _parse_date(date_str)
+                    text, html = _get_body(msg)
+                    attachments_list = _get_attachments(msg)
+
+                    hdr_msg2 = email.message_from_bytes(raw_bytes)
+                    msg_id = _get_msg_id(hdr_msg2)
                     if not msg_id:
-                        msg_id = _make_fallback_id(header_raw)
+                        msg_id = _make_fallback_id(raw_bytes)
 
-                    exists = (
-                        session.query(Email)
-                        .filter(
-                            Email.account_id == account.id,
-                            Email.message_id == msg_id,
-                            Email.folder == folder_name,
-                        )
-                        .first()
+                    email_entry = Email(
+                        account_id=account.id,
+                        folder=folder_name,
+                        uid=uid_val,
+                        uidvalidity=uidvalidity,
+                        message_id=msg_id,
+                        subject=subject,
+                        sender_name=sender_name,
+                        sender_email=sender_email,
+                        recipients_to=to_raw,
+                        recipients_cc=cc_raw,
+                        recipients_bcc=bcc_raw,
+                        date=date,
+                        received_date=date,
+                        body_text=text,
+                        body_html=html,
+                        raw=raw_bytes,
+                        has_attachments=len(attachments_list) > 0,
+                        is_read=False,
+                        is_flagged=False,
+                        is_imported=False,
                     )
-                    if exists:
-                        existing_ids.add(msg_id)
-                        if exists.uid is None:
-                            exists.uid = uid_val
-                            exists.uidvalidity = uidvalidity
-                        continue
+                    session.add(email_entry)
+                    session.flush()
 
-                    was_deleted = (
-                        session.query(DeletedEmail)
-                        .filter(
-                            DeletedEmail.account_id == account.id,
-                            DeletedEmail.message_id == msg_id,
-                            DeletedEmail.folder == folder_name,
+                    for fname, ctype, cid, payload in attachments_list:
+                        file_path = _save_attachment(email_entry.id, fname, payload) if payload else None
+                        att = Attachment(
+                            email_id=email_entry.id,
+                            filename=fname,
+                            content_type=ctype,
+                            content_id=cid,
+                            size=len(payload) if payload else 0,
+                            data=payload,
+                            file_path=file_path,
                         )
-                        .first()
-                    )
-                    if was_deleted:
-                        continue
+                        session.add(att)
 
-                    new_uids_batch.append(uid_val)
+                    count += 1
 
-                if new_uids_batch:
-                    body_responses = client.fetch(new_uids_batch, ["BODY.PEEK[]"])
+            session.commit()
+            _write_progress(
+                account.id,
+                i + len(batch), total_to_fetch, folder_name, total_so_far + count,
+            )
 
-                    for uid_val in new_uids_batch:
-                        body_data = body_responses.get(uid_val, {})
-                        raw_bytes = body_data.get(b"BODY[]")
-                        if not raw_bytes:
-                            continue
-
-                        msg = email.message_from_bytes(raw_bytes)
-
-                        subject = _decode_mime(msg.get("Subject", ""))
-                        sender_raw = str(msg.get("From", ""))
-                        sender_name, sender_email = _parse_address(sender_raw)
-                        to_raw = str(msg.get("To", ""))
-                        cc_raw = str(msg.get("Cc", ""))
-                        bcc_raw = str(msg.get("Bcc", ""))
-                        date_str = str(msg.get("Date", "") or "")
-                        date = _parse_date(date_str)
-                        text, html = _get_body(msg)
-                        attachments_list = _get_attachments(msg)
-
-                        hdr_msg2 = email.message_from_bytes(raw_bytes)
-                        msg_id = _get_msg_id(hdr_msg2)
-                        if not msg_id:
-                            msg_id = _make_fallback_id(raw_bytes)
-
-                        email_entry = Email(
-                            account_id=account.id,
-                            folder=folder_name,
-                            uid=uid_val,
-                            uidvalidity=uidvalidity,
-                            message_id=msg_id,
-                            subject=subject,
-                            sender_name=sender_name,
-                            sender_email=sender_email,
-                            recipients_to=to_raw,
-                            recipients_cc=cc_raw,
-                            recipients_bcc=bcc_raw,
-                            date=date,
-                            received_date=date,
-                            body_text=text,
-                            body_html=html,
-                            raw=raw_bytes,
-                            has_attachments=len(attachments_list) > 0,
-                            is_read=False,
-                            is_flagged=False,
-                            is_imported=False,
-                        )
-                        session.add(email_entry)
-                        session.flush()
-
-                        for fname, ctype, cid, payload in attachments_list:
-                            file_path = _save_attachment(email_entry.id, fname, payload) if payload else None
-                            att = Attachment(
-                                email_id=email_entry.id,
-                                filename=fname,
-                                content_type=ctype,
-                                content_id=cid,
-                                size=len(payload) if payload else 0,
-                                data=payload,
-                                file_path=file_path,
-                            )
-                            session.add(att)
-
-                        count += 1
-
-                session.commit()
-                year_done += len(batch)
-                _write_progress(
-                    account.id,
-                    i + len(batch), year_total, folder_name, total_so_far + count,
-                    year=chunk_year, year_current=year_done, year_total=year_total,
-                )
-
-            if chunk_year is not None:
-                logger.info("Year %d done: %d new emails", chunk_year, count)
         logger.info("Folder %s done: %d new emails", folder_name, count)
     except FetchCancelled:
         session.rollback()
