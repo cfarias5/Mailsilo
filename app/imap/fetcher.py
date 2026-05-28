@@ -467,16 +467,14 @@ def _connect_imap(account: Account) -> IMAPClient:
     use_ssl = account.imap_use_ssl
     username = account.username or account.email
 
-    addrs = socket.getaddrinfo(server, port, socket.AF_INET, socket.SOCK_STREAM)
-    host_ip = addrs[0][4][0]
-
-    sock = socket.create_connection((host_ip, port), timeout=30)
-    if use_ssl:
-        import ssl
-        ctx = ssl.create_default_context()
-        sock = ctx.wrap_socket(sock, server_hostname=server)
-
-    client = IMAPClient(server, use_uid=True, ssl=False, stream=sock, timeout=30)
+    orig_getaddrinfo = socket.getaddrinfo
+    def _ipv4_getaddrinfo(h, p, family=0, type=0, proto=0, flags=0):
+        return orig_getaddrinfo(h, p, socket.AF_INET, type, proto, flags)
+    socket.getaddrinfo = _ipv4_getaddrinfo
+    try:
+        client = IMAPClient(server, use_uid=True, ssl=use_ssl, port=port, timeout=30)
+    finally:
+        socket.getaddrinfo = orig_getaddrinfo
 
     if account.uses_oauth:
         if account.oauth_provider == "microsoft":
@@ -616,14 +614,14 @@ def _list_folders_from_client(client: IMAPClient) -> list[str]:
 def list_folders(server: str, port: int = 993, use_ssl: bool = True, username: str = "", password: str = "", account: Account | None = None) -> list[str]:
     try:
         import socket
-        addrs = socket.getaddrinfo(server, port, socket.AF_INET, socket.SOCK_STREAM)
-        host_ip = addrs[0][4][0]
-        sock = socket.create_connection((host_ip, port), timeout=30)
-        if use_ssl:
-            import ssl
-            ctx = ssl.create_default_context()
-            sock = ctx.wrap_socket(sock, server_hostname=server)
-        client = IMAPClient(server, use_uid=True, ssl=False, stream=sock, timeout=30)
+        orig_getaddrinfo = socket.getaddrinfo
+        def _ipv4_getaddrinfo(h, p, family=0, type=0, proto=0, flags=0):
+            return orig_getaddrinfo(h, p, socket.AF_INET, type, proto, flags)
+        socket.getaddrinfo = _ipv4_getaddrinfo
+        try:
+            client = IMAPClient(server, use_uid=True, ssl=use_ssl, port=port, timeout=30)
+        finally:
+            socket.getaddrinfo = orig_getaddrinfo
 
         if account and account.uses_oauth:
             from app.api.oauth_microsoft import refresh_microsoft_token
