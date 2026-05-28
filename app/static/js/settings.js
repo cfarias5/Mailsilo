@@ -210,6 +210,16 @@ async function renderSettings() {
             </ol>
 
             <p style="font-size:.78rem;color:var(--text-tertiary)">Servidor: <code>outlook.office365.com</code> · Puerto: <code>993</code> · SSL: ✅</p>
+
+            <h4 style="margin:.5rem 0 .25rem">📁 Obtener carpetas después de conectar</h4>
+            <ol>
+              <li>Ve a <strong>Cuentas</strong> y haz clic en la cuenta que acabas de crear</li>
+              <li>Haz clic en <strong>Editar</strong></li>
+              <li>Haz clic en <strong>🔍 Probar conexión y obtener carpetas</strong></li>
+              <li>Selecciona las carpetas que quieras sincronizar (INBOX, Enviados, etc.)</li>
+              <li>Haz clic en <strong>Guardar</strong></li>
+              <li>Ahora puedes sincronizar con el botón 🔄</li>
+            </ol>
           </div>
         </details>
 

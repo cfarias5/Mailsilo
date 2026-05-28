@@ -114,7 +114,7 @@ def _parse_address(hdr: str) -> tuple[str, str]:
 
 
 def _get_msg_id(msg: email.message.Message) -> str:
-    mid = msg.get("Message-ID", "") or ""
+    mid = str(msg.get("Message-ID", "") or "")
     return mid.strip()
 
 
@@ -142,7 +142,7 @@ def _get_body(msg: email.message.Message) -> tuple[str, str]:
     if msg.is_multipart():
         for part in msg.walk():
             ct = part.get_content_type()
-            disp = (part.get("Content-Disposition") or "").lower()
+            disp = str(part.get("Content-Disposition") or "").lower()
             if "attachment" in disp:
                 continue
             if part.get_content_maintype() == "multipart":
@@ -199,8 +199,8 @@ def _get_attachments(msg: email.message.Message) -> list[tuple[str, str, str, by
             if part.get_content_maintype() == "multipart":
                 continue
             ct = part.get_content_type()
-            disp = (part.get("Content-Disposition") or "").lower()
-            cid = (part.get("Content-ID") or "").strip("<>").strip()
+            disp = str(part.get("Content-Disposition") or "").lower()
+            cid = str(part.get("Content-ID") or "").strip("<>").strip()
             is_inline_image = ct.startswith("image/") and (cid or "inline" in disp)
             is_attachment = "attachment" in disp
             if not is_inline_image and not is_attachment:
@@ -395,7 +395,7 @@ def _fetch_folder(client: IMAPClient, account: Account, folder_name: str, total_
                         to_raw = str(msg.get("To", ""))
                         cc_raw = str(msg.get("Cc", ""))
                         bcc_raw = str(msg.get("Bcc", ""))
-                        date_str = msg.get("Date", "")
+                        date_str = str(msg.get("Date", "") or "")
                         date = _parse_date(date_str)
                         text, html = _get_body(msg)
                         attachments_list = _get_attachments(msg)

@@ -1332,10 +1332,12 @@ async function checkActiveImports() {
           toast(`${s.imported} correos importados`);
           loadStats();
           loadSidebarAccounts();
+          setTimeout(() => { const sd = $("#sidebarImportProgress"); if (sd) sd.style.display = "none"; }, 5000);
         } else if (s.status === "error") {
           if (sbar) sbar.style.background = "var(--danger)";
           if (stxt) stxt.innerHTML = `<span style="color:var(--danger)">❌ ${s.error || "Error"}</span>`;
           if (sbtn) sbtn.remove();
+          setTimeout(() => { const sd = $("#sidebarImportProgress"); if (sd) sd.style.display = "none"; }, 5000);
         }
         activeImportTask = null;
       },
