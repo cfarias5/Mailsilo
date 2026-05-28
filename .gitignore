@@ -7,3 +7,5 @@ data/
 *.egg-info/
 dist/
 storage/
+attachments/
+attachments/
