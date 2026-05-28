@@ -113,6 +113,10 @@ def _parse_address(hdr: str) -> tuple[str, str]:
     return "", hdr
 
 
+def _sanitize(s: str) -> str:
+    return s.replace("\x00", "")
+
+
 def _get_msg_id(msg: email.message.Message) -> str:
     mid = str(msg.get("Message-ID", "") or "")
     return mid.strip()
@@ -392,16 +396,16 @@ def _fetch_folder(client: IMAPClient, account: Account, folder_name: str, total_
                         uid=uid_val,
                         uidvalidity=uidvalidity,
                         message_id=msg_id,
-                        subject=subject,
-                        sender_name=sender_name,
-                        sender_email=sender_email,
-                        recipients_to=to_raw,
-                        recipients_cc=cc_raw,
-                        recipients_bcc=bcc_raw,
+                        subject=_sanitize(subject),
+                        sender_name=_sanitize(sender_name),
+                        sender_email=_sanitize(sender_email),
+                        recipients_to=_sanitize(to_raw),
+                        recipients_cc=_sanitize(cc_raw),
+                        recipients_bcc=_sanitize(bcc_raw),
                         date=date,
                         received_date=date,
-                        body_text=text,
-                        body_html=html,
+                        body_text=_sanitize(text),
+                        body_html=_sanitize(html),
                         raw=raw_bytes,
                         has_attachments=len(attachments_list) > 0,
                         is_read=False,

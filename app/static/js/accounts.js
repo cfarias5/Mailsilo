@@ -993,9 +993,8 @@ function stopAllPollers() {
 }
 
 async function fetchAllAccounts() {
-  const btn = $("#fetchAllBtn");
-  btn.style.pointerEvents = "none";
-  btn.style.opacity = ".5";
+  const btn = document.querySelector("[data-action='fetch-all']");
+  if (btn) { btn.style.pointerEvents = "none"; btn.style.opacity = ".5"; }
   try {
     const r = await api("/api/fetch-all", { method: "POST" });
     const total = Object.values(r).reduce((a, b) => a + (b > 0 ? b : 0), 0);
@@ -1003,8 +1002,7 @@ async function fetchAllAccounts() {
   } catch (e) {
     toast(`Error: ${e.message}`);
   }
-  btn.style.pointerEvents = "";
-  btn.style.opacity = "";
+  if (btn) { btn.style.pointerEvents = ""; btn.style.opacity = ""; }
   loadStats();
 }
 
