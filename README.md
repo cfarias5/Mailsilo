@@ -30,6 +30,24 @@ MailSilo is an open-source solution to back up, organize, and protect your email
 
 ## Quick start
 
+### Option A — Pull from Docker Hub (recommended)
+
+```bash
+# 1. Create a .env file (or copy from .env.example)
+cp .env.example .env
+
+# 2. In docker-compose.yaml, change "build: ." to "image: cesarf26/mailsilo:latest"
+
+# 3. Start
+docker compose up -d
+```
+
+Open http://localhost:8765
+
+On first run you will be prompted to create an admin user.
+
+### Option B — Build locally
+
 ```bash
 # Start with default values (no prior setup)
 docker compose up -d
@@ -42,7 +60,6 @@ On first run you will be prompted to create an admin user.
 ### Custom configuration (optional)
 
 ```bash
-cp .env.example .env
 # Edit .env if you need custom PostgreSQL credentials or a Cloudflare Tunnel
 docker compose up -d
 ```
