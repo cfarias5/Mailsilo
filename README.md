@@ -164,4 +164,4 @@ MailSilo es un proyecto de código abierto independiente. Si te está ayudando a
 
 ## Licencia
 
-Código abierto — consultá el repositorio para más detalles.
+MIT License — consultá [LICENSE](LICENSE) para más detalles.

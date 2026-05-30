@@ -175,6 +175,9 @@ def _get_body(msg: email.message.Message) -> tuple[str, str]:
 def sanitize_html(html_str: str) -> str:
     if not html_str:
         return html_str
+    import warnings
+    from bs4 import XMLParsedAsHTMLWarning
+    warnings.filterwarnings("ignore", category=XMLParsedAsHTMLWarning)
     soup = BeautifulSoup(html_str, "html.parser")
     for tag in soup(["script", "style", "iframe", "object", "embed", "noscript"]):
         tag.decompose()
