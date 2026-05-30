@@ -35,10 +35,7 @@ MailSilo is an open-source solution to back up, organize, and protect your email
 This is the simplest method. It uses `docker compose` which automatically creates the network, volumes, and starts PostgreSQL:
 
 ```bash
-# 1. Create a .env file (or copy from .env.example)
-cp .env.example .env
-
-# 2. Start everything (PostgreSQL + MailSilo)
+# Start everything (PostgreSQL + MailSilo)
 docker compose up -d
 ```
 
@@ -46,7 +43,9 @@ Open http://localhost:8765
 
 On first run you will be prompted to create an admin user.
 
-> **Note:** Using just `docker run` is not recommended — you'd need to manually set up a PostgreSQL container, create a shared network, and pass the `DATABASE_URL` environment variable. Stick with `docker compose` for a seamless setup.
+> **Note:** The compose file includes sensible defaults. To customize the PostgreSQL password or add a Cloudflare Tunnel, create a `.env` file with `POSTGRES_PASSWORD=tu_clave` and/or `TUNNEL_TOKEN=tu_token`.
+
+> **Important:** Using just `docker run` is not recommended — you'd need to manually set up a PostgreSQL container, create a shared network, and pass the `DATABASE_URL` environment variable. Stick with `docker compose` for a seamless setup.
 
 ### Option B — Build locally
 
