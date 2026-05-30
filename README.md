@@ -38,9 +38,7 @@ This is the simplest method. It uses `docker compose` which automatically create
 # 1. Create a .env file (or copy from .env.example)
 cp .env.example .env
 
-# 2. In docker-compose.yaml, change "build: ." to "image: cesarf26/mailsilo:latest"
-
-# 3. Start everything (PostgreSQL + MailSilo)
+# 2. Start everything (PostgreSQL + MailSilo)
 docker compose up -d
 ```
 

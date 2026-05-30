@@ -20,7 +20,10 @@ services:
       retries: 5
 
   mailsilo:
-    build: .
+    # Use pre-built image from Docker Hub (recommended for most users)
+    image: cesarf26/mailsilo:latest
+    # Or build from source (uncomment below and comment the line above):
+    # build: .
     container_name: mailsilo
     ports:
       - "8765:8765"
