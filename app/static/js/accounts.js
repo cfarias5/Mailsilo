@@ -52,28 +52,28 @@ async function renderAccounts() {
   updateAccountSelectionToolbar();
 
   let html = `<div class="accounts-header">
-    <h2>📋 Cuentas de correo</h2>
-    <button class="btn-sm primary" data-action="add-account">+ Añadir</button>
+    <h2>📋 Email Accounts</h2>
+    <button class="btn-sm primary" data-action="add-account">+ Add</button>
   </div>`;
 
   if (accounts.length === 0) {
     html += `<div class="empty-state-card">
       <div class="icon">📬</div>
-      <p>No hay cuentas configuradas.</p>
-      <p style="font-size:.8rem;margin-top:.3rem">Añade una cuenta IMAP para sincronizar tus correos.</p>
+      <p>No accounts configured.</p>
+      <p style="font-size:.8rem;margin-top:.3rem">Add an IMAP account to sync your emails.</p>
     </div>`;
   } else {
     html += `<div class="selection-toolbar" id="accountSelectionToolbar" style="display:none">
-      <label class="select-all-label"><input type="checkbox" id="selectAllAccounts" onchange="toggleSelectAllAccounts(this.checked)"> <span id="accountSelectionCount">0 seleccionadas</span></label>
-      <button class="btn-sm danger" data-action="delete-selected-accounts">🗑 Eliminar seleccionadas</button>
+      <label class="select-all-label"><input type="checkbox" id="selectAllAccounts" onchange="toggleSelectAllAccounts(this.checked)"> <span id="accountSelectionCount">0 selected</span></label>
+      <button class="btn-sm danger" data-action="delete-selected-accounts">🗑 Delete selected</button>
     </div>`;
     html += `<div class="accounts-list">`;
     for (const a of accounts) {
       const checked = selectedAccountIds.has(a.id) ? "checked" : "";
       const badge = a.enabled
-        ? `<span class="badge badge-active">Activa</span>`
-        : `<span class="badge badge-inactive">Inactiva</span>`;
-      const lastFetch = a.last_fetch ? new Date(a.last_fetch).toLocaleString() : "Nunca";
+        ? `<span class="badge badge-active">Active</span>`
+        : `<span class="badge badge-inactive">Inactive</span>`;
+      const lastFetch = a.last_fetch ? new Date(a.last_fetch).toLocaleString() : "Never";
       html += `<div class="account-card" data-action="show-account" data-account-id="${a.id}">
         <input type="checkbox" class="account-checkbox" data-account-id="${a.id}" ${checked} onclick="event.stopPropagation()" onchange="toggleSelectAccount(${a.id}, this.checked)">
         <div class="account-card-top">
@@ -92,10 +92,10 @@ async function renderAccounts() {
           <span>🔄 ${lastFetch}</span>
         </div>
         <div class="account-card-actions">
-          ${a.is_imported ? "" : `<button class="btn-sm" data-action="fetch" data-account-id="${a.id}">🔄 Sincronizar</button>`}
-          <button class="btn-sm" data-action="export-account-mbox" data-account-id="${a.id}" data-account-email="${esc(a.email)}">📦 Exportar MBOX</button>
-          <button class="btn-sm" data-action="edit-account" data-account-id="${a.id}">✏️ Editar</button>
-          <button class="btn-sm danger" data-action="delete-account" data-account-id="${a.id}">🗑 Eliminar</button>
+          ${a.is_imported ? "" : `<button class="btn-sm" data-action="fetch" data-account-id="${a.id}">🔄 Sync</button>`}
+          <button class="btn-sm" data-action="export-account-mbox" data-account-id="${a.id}" data-account-email="${esc(a.email)}">📦 Export MBOX</button>
+          <button class="btn-sm" data-action="edit-account" data-account-id="${a.id}">✏️ Edit</button>
+          <button class="btn-sm danger" data-action="delete-account" data-account-id="${a.id}">🗑 Delete</button>
         </div>
         <div class="fetch-status-text" id="fetch-status-${a.id}"></div>
       </div>`;
@@ -135,14 +135,14 @@ async function showAccountDetail(id) {
   if (!a) return;
 
   setSplitView(true);
-  setListTitle("Cuenta", esc(a.email));
+  setListTitle("Account", esc(a.email));
   $("#detailEmpty").style.display = "none";
   $("#detailContent").style.display = "block";
 
-  const lastFetch = a.last_fetch ? new Date(a.last_fetch).toLocaleString() : "Nunca";
+  const lastFetch = a.last_fetch ? new Date(a.last_fetch).toLocaleString() : "Never";
   const badge = a.enabled
-    ? `<span class="badge badge-active">Activa</span>`
-    : `<span class="badge badge-inactive">Inactiva</span>`;
+    ? `<span class="badge badge-active">Active</span>`
+    : `<span class="badge badge-inactive">Inactive</span>`;
 
   let folders = Array.isArray(a.folders) ? a.folders.join(", ") : a.folders;
 
@@ -156,25 +156,25 @@ async function showAccountDetail(id) {
     </div>
 
       <div class="detail-section">
-        <div class="detail-section-title">Estado</div>
+        <div class="detail-section-title">Status</div>
         <div class="detail-info-grid">
-          <div><span class="detail-label">Estado</span><span>${badge}</span></div>
-          <div><span class="detail-label">Correos</span><span>${a.email_count}</span></div>
+          <div><span class="detail-label">Status</span><span>${badge}</span></div>
+          <div><span class="detail-label">Emails</span><span>${a.email_count}</span></div>
           ${a.is_imported
-            ? `<div style="grid-column:1/-1;color:var(--text-tertiary);font-size:.85rem;padding-top:.25rem">📥 Cuenta importada — sin conexión IMAP</div>`
-            : `<div><span class="detail-label">Último fetch</span><span>${lastFetch}</span></div>
-               <div><span class="detail-label">Auto-sincronizar</span><span>${syncIntervalLabel(a.sync_interval)}</span></div>`}
+            ? `<div style="grid-column:1/-1;color:var(--text-tertiary);font-size:.85rem;padding-top:.25rem">📥 Imported account — no IMAP connection</div>`
+            : `<div><span class="detail-label">Last fetch</span><span>${lastFetch}</span></div>
+               <div><span class="detail-label">Auto-sync</span><span>${syncIntervalLabel(a.sync_interval)}</span></div>`}
         </div>
       </div>
 
       <div class="detail-section" id="detail-fetch-section-${a.id}" style="display:none">
-        <div class="detail-section-title">⏳ Sincronización en curso</div>
+        <div class="detail-section-title">⏳ Sync in progress</div>
         <div class="import-progress-bar" style="margin:.5rem 0">
           <div id="detail-fetch-bar-${a.id}" class="import-progress-bar-fill" style="width:0%"></div>
         </div>
-        <div class="import-progress-status" id="detail-fetch-status-${a.id}" style="font-size:.85rem">Iniciando...</div>
+        <div class="import-progress-status" id="detail-fetch-status-${a.id}" style="font-size:.85rem">Starting...</div>
         <div class="import-progress-bar-group" id="detail-fetch-year-group-${a.id}" style="display:none;margin:.25rem 0 0 0">
-          <div class="detail-section-title" style="font-size:.7rem;margin:0 0 .15rem 0">Por año</div>
+          <div class="detail-section-title" style="font-size:.7rem;margin:0 0 .15rem 0">By year</div>
           <div class="import-progress-bar" style="height:.5rem">
             <div id="detail-fetch-year-bar-${a.id}" class="import-progress-bar-fill" style="width:0%"></div>
           </div>
@@ -184,18 +184,18 @@ async function showAccountDetail(id) {
       </div>
 
     <div class="detail-section">
-      <div class="detail-section-title">Servidor</div>
+      <div class="detail-section-title">Server</div>
       <div class="detail-info-grid">
-        <div><span class="detail-label">Servidor IMAP</span><span>${esc(a.imap_server)}</span></div>
-        <div><span class="detail-label">Puerto</span><span>${a.imap_port}</span></div>
-        <div><span class="detail-label">SSL</span><span>${a.imap_use_ssl ? "✅ Sí" : "❌ No"}</span></div>
-        <div><span class="detail-label">Usuario</span><span>${esc(a.username)}</span></div>
-        ${a.oauth_provider ? `<div><span class="detail-label">Autenticación</span><span>🔵 OAuth (${esc(a.oauth_provider)})</span></div>` : ""}
+        <div><span class="detail-label">IMAP Server</span><span>${esc(a.imap_server)}</span></div>
+        <div><span class="detail-label">Port</span><span>${a.imap_port}</span></div>
+        <div><span class="detail-label">SSL</span><span>${a.imap_use_ssl ? "✅ Yes" : "❌ No"}</span></div>
+        <div><span class="detail-label">Username</span><span>${esc(a.username)}</span></div>
+        ${a.oauth_provider ? `<div><span class="detail-label">Auth</span><span>🔵 OAuth (${esc(a.oauth_provider)})</span></div>` : ""}
       </div>
     </div>
 
     <div class="detail-section">
-      <div class="detail-section-title">Carpetas</div>
+      <div class="detail-section-title">Folders</div>
       <div class="detail-info-grid" style="grid-template-columns:repeat(auto-fill,minmax(120px,1fr))">
         ${(Array.isArray(a.folders) ? a.folders : ["INBOX"]).map(f =>
           `<div class="folder-chip" data-action="show-folder" data-account-id="${a.id}" data-account-email="${esc(a.email)}" data-folder-name="${esc(f)}">
@@ -206,10 +206,10 @@ async function showAccountDetail(id) {
     </div>
 
     <div class="detail-actions">
-      <button class="btn-sm primary" data-action="fetch" data-account-id="${a.id}">🔄 Sincronizar ahora</button>
-      <button class="btn-sm" data-action="export-account-mbox" data-account-id="${a.id}" data-account-email="${esc(a.email)}">📦 Exportar MBOX</button>
-      <button class="btn-sm" data-action="edit-account" data-account-id="${a.id}">✏️ Editar cuenta</button>
-      <button class="btn-sm danger" data-action="delete-account" data-account-id="${a.id}">🗑 Eliminar cuenta</button>
+      <button class="btn-sm primary" data-action="fetch" data-account-id="${a.id}">🔄 Sync now</button>
+      <button class="btn-sm" data-action="export-account-mbox" data-account-id="${a.id}" data-account-email="${esc(a.email)}">📦 Export MBOX</button>
+      <button class="btn-sm" data-action="edit-account" data-account-id="${a.id}">✏️ Edit account</button>
+      <button class="btn-sm danger" data-action="delete-account" data-account-id="${a.id}">🗑 Delete account</button>
     </div>
 
     <div class="fetch-status-text" id="fetch-status-${a.id}" style="margin-top:.75rem"></div>
@@ -218,17 +218,17 @@ async function showAccountDetail(id) {
 }
 
 const SYNC_INTERVALS = [
-  { value: "", label: "No programar" },
-  { value: "6h", label: "Cada 6 horas" },
-  { value: "12h", label: "Cada 12 horas" },
-  { value: "1d", label: "Cada 24 horas" },
-  { value: "7d", label: "Cada 7 días" },
-  { value: "30d", label: "Cada 30 días" },
+  { value: "", label: "Don't schedule" },
+  { value: "6h", label: "Every 6 hours" },
+  { value: "12h", label: "Every 12 hours" },
+  { value: "1d", label: "Every 24 hours" },
+  { value: "7d", label: "Every 7 days" },
+  { value: "30d", label: "Every 30 days" },
 ];
 
 function syncIntervalLabel(val) {
   const found = SYNC_INTERVALS.find(x => x.value === val);
-  return found ? found.label : "No programar";
+  return found ? found.label : "Don't schedule";
 }
 
 function nextSyncTime(interval, lastFetch) {
@@ -252,7 +252,7 @@ const PROVIDERS = [
     port: 993,
     ssl: true,
     auth: "oauth",
-    desc: "Autenticación con Microsoft OAuth 2.0",
+    desc: "Microsoft OAuth 2.0 authentication",
   },
   {
     id: "gmail",
@@ -262,7 +262,7 @@ const PROVIDERS = [
     port: 993,
     ssl: true,
     auth: "password",
-    desc: "Requiere contraseña de aplicación",
+    desc: "Requires app password",
   },
   {
     id: "yahoo",
@@ -272,7 +272,7 @@ const PROVIDERS = [
     port: 993,
     ssl: true,
     auth: "password",
-    desc: "Requiere contraseña de aplicación",
+    desc: "Requires app password",
   },
   {
     id: "icloud",
@@ -282,17 +282,17 @@ const PROVIDERS = [
     port: 993,
     ssl: true,
     auth: "password",
-    desc: "Requiere contraseña específica",
+    desc: "Requires specific password",
   },
   {
     id: "other",
-    name: "Otro / IMAP genérico",
+    name: "Other / Generic IMAP",
     icon: "/static/icons/imap.png",
     server: "",
     port: 993,
     ssl: true,
     auth: "password",
-    desc: "Configuración manual",
+    desc: "Manual configuration",
   },
 ];
 
@@ -305,11 +305,11 @@ function showProviderSelection() {
     </div>
   `).join("");
 
-  openModal(`<h3 style="margin-bottom:16px;text-align:center">📬 Añadir cuenta de correo</h3>
-    <p style="text-align:center;color:var(--text-secondary);font-size:.85rem;margin-bottom:1rem">¿Cuál es tu proveedor de correo?</p>
+  openModal(`<h3 style="margin-bottom:16px;text-align:center">📬 Add email account</h3>
+    <p style="text-align:center;color:var(--text-secondary);font-size:.85rem;margin-bottom:1rem">What is your email provider?</p>
     <div class="provider-grid">${cards}</div>
     <div class="form-actions" style="margin-top:1.5rem">
-      <button class="outline" data-action="close-modal">Cancelar</button>
+      <button class="outline" data-action="close-modal">Cancel</button>
     </div>`, { closable: false });
 }
 
@@ -328,12 +328,12 @@ async function showEditAccount(id) {
     ? `<div class="form-group" style="border-top:1px solid var(--border);padding-top:.5rem">
         <div style="display:flex;align-items:center;gap:.5rem;font-size:.85rem">
           <span style="font-size:1.2rem">🔵</span>
-          <span>Autenticación OAuth (Microsoft)</span>
-          <span style="color:var(--success);font-size:.8rem">✅ Conectado</span>
+          <span>OAuth (Microsoft) Authentication</span>
+          <span style="color:var(--success);font-size:.8rem">✅ Connected</span>
         </div>
         <input type="hidden" name="password" value="">
        </div>`
-    : `<div class="form-group"><label>Contraseña (dejar vacío = no cambiar)</label><input name="password" type="password" value=""></div>`;
+    : `<div class="form-group"><label>Password (leave empty = no change)</label><input name="password" type="password" value=""></div>`;
 
   const testBtnAttrs = id
     ? `data-action="test-connection" data-account-id="${id}"`
@@ -341,41 +341,41 @@ async function showEditAccount(id) {
 
   const folderSection = acct.is_imported
     ? `<div class="form-group">
-        <p style="color:var(--text-tertiary);font-size:.85rem;padding:.25rem 0">📥 Cuenta importada — no hay conexión IMAP disponible</p>
+        <p style="color:var(--text-tertiary);font-size:.85rem;padding:.25rem 0">📥 Imported account — no IMAP connection available</p>
         <input type="hidden" name="folders" id="foldersInput" value="${esc(acct.folders.join(", "))}">
       </div>`
     : `<div class="form-group">
-        <label>Carpetas a sincronizar</label>
+        <label>Folders to sync</label>
         <div class="folder-checkboxes" id="folderList">
-          <p style="color:var(--text-tertiary);font-size:.85rem">${isOAuth ? "Conecta al servidor para ver las carpetas" : "Conecta al servidor para ver las carpetas"}</p>
+          <p style="color:var(--text-tertiary);font-size:.85rem">${isOAuth ? "Connect to server to view folders" : "Connect to server to view folders"}</p>
         </div>
-        <button type="button" class="outline" style="margin-top:6px" ${testBtnAttrs}>🔍 Probar conexión y obtener carpetas</button>
+        <button type="button" class="outline" style="margin-top:6px" ${testBtnAttrs}>🔍 Test connection & get folders</button>
         <input type="hidden" name="folders" id="foldersInput" value="${esc(acct.folders.join(", "))}">
       </div>`;
 
   const syncSection = acct.is_imported
-    ? `<div class="form-group"><label>Sincronización automática</label>
-        <p style="color:var(--text-tertiary);font-size:.85rem;padding:.25rem 0">No disponible para cuentas importadas</p>
+    ? `<div class="form-group"><label>Auto-sync</label>
+        <p style="color:var(--text-tertiary);font-size:.85rem;padding:.25rem 0">Not available for imported accounts</p>
         <input type="hidden" name="sync_interval" value="">
       </div>`
-    : `<div class="form-group"><label>Sincronización automática</label>
+    : `<div class="form-group"><label>Auto-sync</label>
         <select name="sync_interval">${intervalOpts}</select>
       </div>`;
 
-  openModal(`<h3 style="margin-bottom:16px">✏️ Editar cuenta — ${esc(acct.email)}</h3>
+  openModal(`<h3 style="margin-bottom:16px">✏️ Edit account — ${esc(acct.email)}</h3>
     <form id="accountForm">
-      <div class="form-group"><label>Nombre</label><input name="name" value="${esc(acct.name)}" required></div>
+      <div class="form-group"><label>Name</label><input name="name" value="${esc(acct.name)}" required></div>
       <div class="form-group"><label>Email</label><input name="email" type="email" value="${esc(acct.email)}" required></div>
-      <div class="form-group"><label>Servidor IMAP</label><input name="imap_server" value="${esc(acct.imap_server)}" required></div>
-      <div class="form-group"><label>Puerto</label><input name="imap_port" type="number" value="${acct.imap_port}"></div>
-      <div class="form-group"><label><input type="checkbox" name="imap_use_ssl" ${acct.imap_use_ssl ? "checked" : ""}> Usar SSL</label></div>
-      <div class="form-group"><label>Usuario (dejar vacío = email)</label><input name="username" value="${esc(acct.username)}"></div>
+      <div class="form-group"><label>IMAP Server</label><input name="imap_server" value="${esc(acct.imap_server)}" required></div>
+      <div class="form-group"><label>Port</label><input name="imap_port" type="number" value="${acct.imap_port}"></div>
+      <div class="form-group"><label><input type="checkbox" name="imap_use_ssl" ${acct.imap_use_ssl ? "checked" : ""}> Use SSL</label></div>
+      <div class="form-group"><label>Username (leave empty = email)</label><input name="username" value="${esc(acct.username)}"></div>
       ${passwordHtml}
       ${syncSection}
       ${folderSection}
       <div class="form-actions">
-        <button type="submit" class="primary" data-action="save-account" data-account-id="${id}">Guardar cambios</button>
-        <button class="outline" type="button" data-action="close-modal">Cancelar</button>
+        <button type="submit" class="primary" data-action="save-account" data-account-id="${id}">Save changes</button>
+        <button class="outline" type="button" data-action="close-modal">Cancel</button>
       </div>
     </form>`, { closable: false });
   if (id) renderFolderCheckboxes(acct.folders);
@@ -402,34 +402,34 @@ async function showAccountForm(providerId, id = null) {
     if (found) acct = { ...found, password: "" };
   }
 
-  const title = id ? "Editar cuenta" : `Añadir cuenta ${prov.icon} ${prov.name}`;
+  const title = id ? "Edit account" : `Add account ${prov.icon} ${prov.name}`;
   const intervalOpts = SYNC_INTERVALS.map(x =>
     `<option value="${x.value}" ${acct.sync_interval === x.value ? "selected" : ""}>${x.label}</option>`
   ).join("");
 
   openModal(`<h3 style="margin-bottom:16px">${title}</h3>
     <form id="accountForm">
-      <div class="form-group"><label>Nombre</label><input name="name" value="${esc(acct.name)}" required></div>
+      <div class="form-group"><label>Name</label><input name="name" value="${esc(acct.name)}" required></div>
       <div class="form-group"><label>Email</label><input name="email" type="email" value="${esc(acct.email)}" ${id ? "readonly" : ""} required></div>
-      <div class="form-group"><label>Servidor IMAP</label><input name="imap_server" value="${esc(acct.imap_server)}" required></div>
-      <div class="form-group"><label>Puerto</label><input name="imap_port" type="number" value="${acct.imap_port}"></div>
-      <div class="form-group"><label><input type="checkbox" name="imap_use_ssl" ${acct.imap_use_ssl ? "checked" : ""}> Usar SSL</label></div>
-      <div class="form-group"><label>Usuario (dejar vacío = email)</label><input name="username" value="${esc(acct.username)}"></div>
-      <div class="form-group"><label>Contraseña</label><input name="password" type="password" value="" required></div>
-      <div class="form-group"><label>Sincronización automática</label>
+      <div class="form-group"><label>IMAP Server</label><input name="imap_server" value="${esc(acct.imap_server)}" required></div>
+      <div class="form-group"><label>Port</label><input name="imap_port" type="number" value="${acct.imap_port}"></div>
+      <div class="form-group"><label><input type="checkbox" name="imap_use_ssl" ${acct.imap_use_ssl ? "checked" : ""}> Use SSL</label></div>
+      <div class="form-group"><label>Username (leave empty = email)</label><input name="username" value="${esc(acct.username)}"></div>
+      <div class="form-group"><label>Password</label><input name="password" type="password" value="" required></div>
+      <div class="form-group"><label>Auto-sync</label>
         <select name="sync_interval">${intervalOpts}</select>
       </div>
       <div class="form-group">
-        <label>Carpetas a sincronizar</label>
+        <label>Folders to sync</label>
         <div class="folder-checkboxes" id="folderList">
-          <p style="color:var(--text-tertiary);font-size:.85rem;margin-bottom:.5rem">📌 ${prov.id === "gmail" ? "Gmail requiere una <strong>contraseña de aplicación</strong> activando verificación en dos pasos y generando una en myaccount.google.com/security" : prov.id === "yahoo" ? "Yahoo requiere una <strong>contraseña de aplicación</strong> desde Yahoo Account Security" : prov.id === "icloud" ? "iCloud requiere una <strong>contraseña específica</strong> desde appleid.apple.com" : "Conecta al servidor para ver las carpetas"}</p>
+          <p style="color:var(--text-tertiary);font-size:.85rem;margin-bottom:.5rem">📌 ${prov.id === "gmail" ? "Gmail requires an <strong>app password</strong>. Enable 2-step verification and generate one at myaccount.google.com/security" : prov.id === "yahoo" ? "Yahoo requires an <strong>app password</strong> from Yahoo Account Security" : prov.id === "icloud" ? "iCloud requires a <strong>specific password</strong> from appleid.apple.com" : "Connect to server to view folders"}</p>
         </div>
-        <button type="button" class="outline" style="margin-top:6px" data-action="test-connection">🔍 Probar conexión y obtener carpetas</button>
+        <button type="button" class="outline" style="margin-top:6px" data-action="test-connection">🔍 Test connection & get folders</button>
         <input type="hidden" name="folders" id="foldersInput" value="${esc(acct.folders.join(", "))}">
       </div>
       <div class="form-actions">
-        <button type="submit" class="primary" data-action="save-account" data-account-id="${id || 0}">Guardar</button>
-        <button class="outline" type="button" onclick="showProviderSelection()">⬅ Volver</button>
+        <button type="submit" class="primary" data-action="save-account" data-account-id="${id || 0}">Save</button>
+        <button class="outline" type="button" onclick="showProviderSelection()">⬅ Back</button>
       </div>
     </form>`, { closable: false });
 }
@@ -438,11 +438,11 @@ async function showOutlookForm(prov) {
   let azure = { client_id: "", client_secret: "", redirect_uri: "" };
   try { azure = await api("/api/settings/oauth/microsoft"); } catch (e) {}
 
-  openModal(`<h3 style="margin-bottom:16px;text-align:center">🔵 Añadir cuenta Outlook / Hotmail</h3>
-    <p style="text-align:center;color:var(--text-secondary);font-size:.85rem;margin-bottom:1rem">Conéctate con Microsoft OAuth — no necesitas contraseña</p>
+  openModal(`<h3 style="margin-bottom:16px;text-align:center">🔵 Add Outlook / Hotmail account</h3>
+    <p style="text-align:center;color:var(--text-secondary);font-size:.85rem;margin-bottom:1rem">Connect with Microsoft OAuth — no password needed</p>
     <form id="accountForm">
-      <div class="form-group"><label>Nombre</label><input name="name" value="" required></div>
-      <div class="form-group"><label>Email Outlook / Hotmail</label><input name="email" id="outlookEmail" type="email" value="" required></div>
+      <div class="form-group"><label>Name</label><input name="name" value="" required></div>
+      <div class="form-group"><label>Outlook / Hotmail Email</label><input name="email" id="outlookEmail" type="email" value="" required></div>
       <input type="hidden" name="imap_server" value="${prov.server}">
       <input type="hidden" name="imap_port" value="${prov.port}">
       <input type="hidden" name="imap_use_ssl" value="1">
@@ -452,7 +452,7 @@ async function showOutlookForm(prov) {
       <input type="hidden" name="sync_interval" value="">
 
       <details style="margin:.5rem 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.5rem .75rem">
-        <summary style="cursor:pointer;font-weight:500;font-size:.82rem;color:var(--text-secondary)">🔧 Configuración Azure AD (necesario para OAuth)</summary>
+        <summary style="cursor:pointer;font-weight:500;font-size:.82rem;color:var(--text-secondary)">🔧 Azure AD Configuration (required for OAuth)</summary>
         <div style="margin-top:.5rem">
           <div class="form-group" style="margin-bottom:.5rem">
             <label>Client ID</label>
@@ -465,24 +465,24 @@ async function showOutlookForm(prov) {
           <div class="form-group" style="margin-bottom:.5rem">
             <label>Redirect URI</label>
             <input id="azureRedirectUri" value="${esc(azure.redirect_uri)}" placeholder="https://correo.tudominio.com/api/oauth/microsoft/callback" style="font-family:monospace;font-size:.8rem" required>
-            <div style="font-size:.72rem;color:var(--text-tertiary);margin-top:.2rem">Debe coincidir exactamente con el redirect URI registrado en Azure</div>
+            <div style="font-size:.72rem;color:var(--text-tertiary);margin-top:.2rem">Must match the redirect URI registered in Azure exactly</div>
           </div>
         </div>
       </details>
 
       <div id="outlookOAuthSection" style="text-align:center;margin-top:.5rem">
         <button type="button" class="btn-lg primary" id="outlookOAuthBtn" onclick="startOutlookOAuth()">
-          🔵 Conectar con Microsoft
+          🔵 Connect with Microsoft
         </button>
         <div id="outlookOAuthStatus" style="margin-top:.5rem;font-size:.85rem;color:var(--text-tertiary)"></div>
       </div>
       <div id="outlookConnectedSection" style="display:none;text-align:center">
         <div style="color:var(--success);font-size:2rem;margin-bottom:.25rem">✅</div>
-        <p style="color:var(--success);font-weight:500">Cuenta de Microsoft conectada</p>
+        <p style="color:var(--success);font-weight:500">Microsoft account connected</p>
       </div>
       <div class="form-actions" style="margin-top:1.5rem">
-        <button type="submit" class="primary" data-action="save-account" data-account-id="0" id="outlookSaveBtn" disabled>Guardar cuenta</button>
-        <button class="outline" type="button" onclick="showProviderSelection()">⬅ Volver</button>
+        <button type="submit" class="primary" data-action="save-account" data-account-id="0" id="outlookSaveBtn" disabled>Save account</button>
+        <button class="outline" type="button" onclick="showProviderSelection()">⬅ Back</button>
       </div>
     </form>`, { closable: false });
 }
@@ -492,7 +492,7 @@ let _outlookEmail = null;
 async function startOutlookOAuth() {
   const email = $("#outlookEmail")?.value?.trim();
   if (!email) {
-    toast("Primero ingresa tu email de Outlook / Hotmail");
+    toast("Enter your Outlook / Hotmail email first");
     return;
   }
 
@@ -500,7 +500,7 @@ async function startOutlookOAuth() {
   const clientSecret = $("#azureClientSecret")?.value?.trim();
   const redirectUri = $("#azureRedirectUri")?.value?.trim();
   if (!clientId || !clientSecret || !redirectUri) {
-    toast("Completa los datos de Azure AD (Client ID, Secret y Redirect URI)");
+    toast("Complete the Azure AD data (Client ID, Secret and Redirect URI)");
     return;
   }
 
@@ -511,7 +511,7 @@ async function startOutlookOAuth() {
       body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, redirect_uri: redirectUri }),
     });
   } catch (e) {
-    toast("Error al guardar configuración Azure: " + e.message);
+    toast("Error saving Azure configuration: " + e.message);
     return;
   }
 
@@ -520,18 +520,18 @@ async function startOutlookOAuth() {
   const popup = window.open(url, "microsoft-oauth", "width=600,height=700,left=200,top=100");
 
   const statusEl = $("#outlookOAuthStatus");
-  statusEl.textContent = "⏳ Abriendo Microsoft...";
+  statusEl.textContent = "⏳ Opening Microsoft...";
 
   const pollInterval = setInterval(async () => {
     try {
       const r = await api(`/api/oauth/microsoft/tokens?email=${encodeURIComponent(email)}`);
       if (r.connected) {
         clearInterval(pollInterval);
-        if (statusEl) statusEl.innerHTML = `<span style="color:var(--success)">✅ Conectado</span>`;
+        if (statusEl) statusEl.innerHTML = `<span style="color:var(--success)">✅ Connected</span>`;
         $("#outlookOAuthSection").style.display = "none";
         $("#outlookConnectedSection").style.display = "block";
         $("#outlookSaveBtn").disabled = false;
-        toast("✅ Cuenta Microsoft conectada");
+        toast("✅ Microsoft account connected");
         if (popup && !popup.closed) popup.close();
       }
     } catch (e) {}
@@ -543,7 +543,7 @@ async function startOutlookOAuth() {
       setTimeout(() => clearInterval(pollInterval), 10000);
       const st = $("#outlookOAuthStatus");
       if (st && st.textContent.includes("⏳")) {
-        st.innerHTML = `<span style="color:var(--text-tertiary)">⏹ Cancelado — haz clic en Conectar para intentar de nuevo</span>`;
+        st.innerHTML = `<span style="color:var(--text-tertiary)">⏹ Cancelled — click Connect to try again</span>`;
       }
     }
   }, 2000);
@@ -572,8 +572,8 @@ async function testConnection() {
   const accountId = btn?.dataset?.accountId;
 
   btn.disabled = true;
-  btn.textContent = "Conectando...";
-  $("#folderList").innerHTML = `<p style="color:var(--text-tertiary)">Conectando...</p>`;
+  btn.textContent = "Connecting...";
+  $("#folderList").innerHTML = `<p style="color:var(--text-tertiary)">Connecting...</p>`;
 
   try {
     let result;
@@ -599,9 +599,9 @@ async function testConnection() {
         password: fd.get("password"),
       };
       if (!data.imap_server || !data.password) {
-        toast("Completa servidor y contraseña primero");
+        toast("Complete server and password first");
         btn.disabled = false;
-        btn.textContent = "🔍 Probar conexión y obtener carpetas";
+        btn.textContent = "🔍 Test connection & get folders";
         return;
       }
       const res = await fetch(API + "/api/accounts/test-folders", {
@@ -624,16 +624,16 @@ async function testConnection() {
         ${esc(f)}
       </label>`;
     }).join("");
-    if (result.folders.length === 0) html = `<p style="color:var(--text-tertiary)">No se encontraron carpetas</p>`;
+    if (result.folders.length === 0) html = `<p style="color:var(--text-tertiary)">No folders found</p>`;
     $("#folderList").innerHTML = html;
     updateFoldersInput();
-    toast(`✅ ${result.folders.length} carpetas encontradas`);
+    toast(`✅ ${result.folders.length} folders found`);
   } catch (e) {
     $("#folderList").innerHTML = `<p style="color:#ef4444">Error: ${e.message}</p>`;
     toast(`Error: ${e.message}`);
   }
   btn.disabled = false;
-  btn.textContent = "🔍 Probar conexión y obtener carpetas";
+  btn.textContent = "🔍 Test connection & get folders";
 }
 
 async function saveAccount(e, id) {
@@ -646,10 +646,10 @@ async function saveAccount(e, id) {
   if (data.password === "") delete data.password;
   if (id) {
     await api(`/api/accounts/${id}`, { method: "PUT", body: JSON.stringify(data) });
-    toast("Cuenta actualizada");
+    toast("Account updated");
   } else {
     await api("/api/accounts", { method: "POST", body: JSON.stringify(data) });
-    toast("Cuenta añadida");
+    toast("Account added");
   }
   _outlookEmail = null;
   closeModal();
@@ -669,22 +669,22 @@ async function deleteAccount(id) {
 
     openModal(`<div style="text-align:center">
       <div style="font-size:2.5rem;margin-bottom:.75rem">🗑</div>
-      <h3 style="margin-bottom:.25rem">Eliminar cuenta</h3>
+      <h3 style="margin-bottom:.25rem">Delete account</h3>
       <p style="color:var(--text-tertiary);font-size:.85rem;margin-bottom:1.5rem">
-        ¿Qué deseas hacer con <strong>${name}</strong>?
-        ${count > 0 ? `<br>Actualmente tiene <strong>${count}</strong> correos almacenados.` : ""}
+        What do you want to do with <strong>${name}</strong>?
+        ${count > 0 ? `<br>It currently has <strong>${count}</strong> stored emails.` : ""}
       </p>
       <div style="display:flex;flex-direction:column;gap:.5rem">
         <button class="confirm-btn danger" onclick="confirmDeleteAccount(${id}, false)">
-          🗑 Solo eliminar la cuenta
-          <span style="display:block;font-size:.72rem;font-weight:400;opacity:.7">Los correos importados se conservan</span>
+          🗑 Delete account only
+          <span style="display:block;font-size:.72rem;font-weight:400;opacity:.7">Imported emails are kept</span>
         </button>
         ${count > 0 ? `<button class="confirm-btn danger-full" onclick="confirmDeleteAccount(${id}, true)">
-          🔥 Eliminar cuenta y sus ${count} correos
-          <span style="display:block;font-size:.72rem;font-weight:400;opacity:.7">Se borra todo, no se puede deshacer</span>
+          🔥 Delete account and its ${count} emails
+          <span style="display:block;font-size:.72rem;font-weight:400;opacity:.7">Everything is deleted, cannot be undone</span>
         </button>` : ""}
         <button class="confirm-btn cancel" data-action="close-modal">
-          Cancelar
+          Cancel
         </button>
       </div>
     </div>`);
@@ -710,11 +710,11 @@ async function fetchAccount(id, force = false) {
   const url = force ? `/api/accounts/${id}/fetch?force=true` : `/api/accounts/${id}/fetch`;
   try {
     const r = await api(url, { method: "POST" });
-    toast("🔄 Sincronización iniciada");
+    toast("🔄 Sync started");
     pollFetchStatus(id);
   } catch (e) {
     if (e.message.includes("already running")) {
-      toast("⏳ Ya hay una sincronización en curso");
+      toast("⏳ A sync is already in progress");
       scheduleAccountsRender();
       pollFetchStatus(id);
     } else {
@@ -726,8 +726,9 @@ async function fetchAccount(id, force = false) {
 function updateSidebarFetchProgress(id, progress) {
   const el = $(`#sidebar-fetch-${id}`);
   if (!el) return;
-  if (!progress) { el.textContent = "⏳ Iniciando..."; return; }
-  let text = `⏳ ${progress.current}/${progress.total} (${progress.total_fetched} nuevos)`;
+  if (!progress) { el.textContent = "⏳ Starting..."; return; }
+  let text = `⏳ ${progress.current}/${progress.total} (${progress.total_fetched} new)`;
+
   if (progress.year) {
     text = `📅 ${progress.year}: ${progress.year_current}/${progress.year_total} · ${text}`;
   }
@@ -761,10 +762,10 @@ function updateDetailFetchProgress(id, progress) {
   if (bar && progress?.total > 0) {
     const pct = Math.round((progress.current / progress.total) * 100);
     bar.style.width = pct + "%";
-    status.textContent = `${progress.current} de ${progress.total} correos (${progress.total_fetched} nuevos)`;
+    status.textContent = `${progress.current} of ${progress.total} emails (${progress.total_fetched} new)`;
   } else if (bar) {
     bar.style.width = "10%";
-    status.textContent = "Iniciando sincronización...";
+    status.textContent = "Starting sync...";
   }
 }
 
@@ -792,12 +793,12 @@ function completeInlineFetch(id, success, message) {
 async function cancelFetch(id) {
   try {
     const r = await api(`/api/accounts/${id}/fetch/cancel`, { method: "POST" });
-    toast("Fetch cancelado");
+    toast("Fetch cancelled");
 
     completeInlineFetch(
       id,
       false,
-      "Sincronización cancelada"
+      "Sync cancelled"
     );
   } catch (e) {
     toast(`Error: ${e.message}`);
@@ -809,8 +810,8 @@ function updateFetchStatusDivFromStatus(id, s) {
   if (!el) return;
   if (s.status === "running") {
     el.textContent = s.progress
-      ? `⏳ ${s.progress.folder || ""} ${s.progress.current}/${s.progress.total} (${s.progress.total_fetched} nuevos)`
-      : "⏳ Iniciando sincronización...";
+      ? `⏳ ${s.progress.folder || ""} ${s.progress.current}/${s.progress.total} (${s.progress.total_fetched} new)`
+      : "⏳ Starting sync...";
   } else if (s.status === "done") {
     el.textContent = "";
   } else if (s.status === "error") {
@@ -903,7 +904,7 @@ function pollFetchStatus(id) {
       const p = data.progress || data;
       if (data.status === "done") {
         done();
-        completeInlineFetch(id, true, data.message || "Completado");
+        completeInlineFetch(id, true, data.message || "Completed");
       } else if (data.status === "error") {
         done();
         completeInlineFetch(id, false, data.message || "Error");
@@ -911,7 +912,7 @@ function pollFetchStatus(id) {
         scheduleProgressUpdate(id, p);
         const el = document.getElementById(`fetch-status-${id}`);
         if (el) {
-          el.textContent = `⏳ ${p.folder || ""} ${p.current || 0}/${p.total || 0} (${p.total_fetched || 0} nuevos)`;
+          el.textContent = `⏳ ${p.folder || ""} ${p.current || 0}/${p.total || 0} (${p.total_fetched || 0} new)`;
         }
       }
     } catch (err) {
@@ -929,7 +930,7 @@ function pollFetchStatus(id) {
       scheduleProgressUpdate(id, p);
       const el = document.getElementById(`fetch-status-${id}`);
       if (el) {
-        el.textContent = `⏳ ${p.folder || ""} ${p.current || 0}/${p.total || 0} (${p.total_fetched || 0} nuevos)`;
+        el.textContent = `⏳ ${p.folder || ""} ${p.current || 0}/${p.total || 0} (${p.total_fetched || 0} new)`;
       }
     } catch (err) {
       console.error("Error parsing progress event:", err);
@@ -965,7 +966,7 @@ function pollFetchStatus(id) {
     console.warn("SSE connection error, will retry in 3s");
     const el = document.getElementById(`fetch-status-${id}`);
     if (el) {
-      el.textContent = "🔄 Reintentando conexión...";
+      el.textContent = "🔄 Retrying connection...";
     }
     cleanup();
     if (!reconnectTimer && fetchPollers[id] !== undefined) {
@@ -980,7 +981,7 @@ function pollFetchStatus(id) {
     console.log("SSE connected successfully!");
     const el = document.getElementById(`fetch-status-${id}`);
     if (el) {
-      el.textContent = "⏳ Iniciando sincronización...";
+      el.textContent = "⏳ Starting sync...";
     }
   };
 }
@@ -998,7 +999,7 @@ async function fetchAllAccounts() {
   try {
     const r = await api("/api/fetch-all", { method: "POST" });
     const total = Object.values(r).reduce((a, b) => a + (b > 0 ? b : 0), 0);
-    toast(`✅ ${total} nuevos correos`);
+    toast(`✅ ${total} new emails`);
   } catch (e) {
     toast(`Error: ${e.message}`);
   }
@@ -1019,8 +1020,8 @@ async function loadStats() {
 
 async function renderImport() {
   let html = `<div class="import-header">
-    <h2>📥 Importar correos</h2>
-    <p>Arrastra archivos o haz clic para seleccionar. Compatible con EML, PST, OST y MBOX.</p>
+    <h2>📥 Import emails</h2>
+    <p>Drag and drop files or click to select. Supports EML, PST, OST and MBOX.</p>
   </div>
   <div class="import-tabs" id="importTabs">
     <div class="import-tab active" data-import="eml">EML</div>
@@ -1030,13 +1031,13 @@ async function renderImport() {
   </div>
   <div class="import-area" id="dropZone">
     <div class="import-icon">📂</div>
-    <p class="label">Arrastra archivos aquí</p>
-    <p class="hint">o haz clic para seleccionar</p>
+    <p class="label">Drag files here</p>
+    <p class="hint">or click to select</p>
     <input type="file" id="fileInput" style="display:none" accept=".eml,.pst,.ost,.mbox" multiple>
   </div>
   <div class="import-select">
     <select id="importAccountId">
-      <option value="0">Auto-crear cuenta</option>
+      <option value="0">Auto-create account</option>
     </select>
   </div>
   <div id="importResult"></div>`;
@@ -1082,7 +1083,7 @@ async function processImportFiles(files) {
     const rd = $("#importResult");
     if (!rd) return;
     rd.innerHTML = `<div class="import-progress-card">
-      <div class="filename">📄 Archivo ${i + 1} de ${total}</div>
+      <div class="filename">📄 File ${i + 1} of ${total}</div>
       <div class="filemeta">${esc(file.name)}</div>
       <div class="import-progress-bar">
         <div class="import-progress-bar-fill" style="width:${pct}%"></div>
@@ -1095,7 +1096,7 @@ async function processImportFiles(files) {
     const poll = () => {
       api(`/api/import/status/${taskId}`).then(s => {
         if (s.status === "done") resolve(s.imported || 0);
-        else if (s.status === "error") reject(new Error(s.error || "Error en tarea"));
+        else if (s.status === "error") reject(new Error(s.error || "Task error"));
         else setTimeout(poll, 1500);
       }).catch(() => setTimeout(poll, 3000));
     };
@@ -1107,11 +1108,11 @@ async function processImportFiles(files) {
     const ext = file.name.split(".").pop().toLowerCase();
 
     if (!["eml", "pst", "ost", "mbox"].includes(ext)) {
-      errors.push(`${file.name}: formato no soportado`);
+      errors.push(`${file.name}: unsupported format`);
       continue;
     }
 
-    showProgress(i, file, `Subiendo ${esc(file.name)}...`, Math.round((i / total) * 100));
+    showProgress(i, file, `Uploading ${esc(file.name)}...`, Math.round((i / total) * 100));
 
     try {
       if (ext === "eml") {
@@ -1127,7 +1128,7 @@ async function processImportFiles(files) {
         }
         const data = await res.json();
         totalImported += data.imported || 0;
-        showProgress(i, file, `✅ ${data.imported || 0} correos`, Math.round(((i + 1) / total) * 100));
+        showProgress(i, file, `✅ ${data.imported || 0} emails`, Math.round(((i + 1) / total) * 100));
       } else {
         const form = new FormData();
         form.append("file", file);
@@ -1143,18 +1144,18 @@ async function processImportFiles(files) {
             if (!e.lengthComputable) return;
             if (e.loaded === e.total) uploadComplete = true;
             const pct = Math.round((i / total) * 100 + (e.loaded / e.total) * (100 / total));
-            showProgress(i, file, `Subiendo... ${Math.round((e.loaded / e.total) * 100)}%`, pct);
+            showProgress(i, file, `Uploading... ${Math.round((e.loaded / e.total) * 100)}%`, pct);
           };
           xhr.onload = () => {
             try {
               const d = JSON.parse(xhr.responseText);
               if (xhr.status >= 200 && xhr.status < 300) resolve(d.task_id);
               else reject(new Error(d.detail || `Error ${xhr.status}`));
-            } catch { reject(new Error("Respuesta inválida")); }
+            } catch { reject(new Error("Invalid response")); }
           };
           xhr.onerror = () => {
             if (uploadComplete) {
-              showProgress(i, file, "Esperando procesamiento...", Math.round(((i + 0.5) / total) * 100));
+              showProgress(i, file, "Waiting for processing...", Math.round(((i + 0.5) / total) * 100));
               let retries = 0;
               const findTask = () => {
                 api("/api/import/active").then(active => {
@@ -1165,26 +1166,23 @@ async function processImportFiles(files) {
                   } else if (++retries < 10) {
                     setTimeout(findTask, 2000);
                   } else {
-                    reject(new Error("Error de conexión"));
+                    reject(new Error("Connection error"));
                   }
                 }).catch(() => {
                   if (++retries < 10) setTimeout(findTask, 2000);
-                  else reject(new Error("Error de conexión"));
-                });
-              };
-              setTimeout(findTask, 2000);
-            } else {
-              reject(new Error("Error de conexión"));
+                  else reject(new Error("Connection error"));
+
+              reject(new Error("Connection error"));
             }
           };
           xhr.timeout = 600000;
           xhr.send(form);
         });
 
-        showProgress(i, file, `Procesando ${esc(file.name)}...`, Math.round(((i + 0.5) / total) * 100));
+        showProgress(i, file, `Processing ${esc(file.name)}...`, Math.round(((i + 0.5) / total) * 100));
         const n = await waitForTask(taskId);
         totalImported += n;
-        showProgress(i, file, `✅ ${n} correos`, Math.round(((i + 1) / total) * 100));
+        showProgress(i, file, `✅ ${n} emails`, Math.round(((i + 1) / total) * 100));
       }
     } catch (e) {
       errors.push(`${file.name}: ${e.message}`);
@@ -1194,27 +1192,27 @@ async function processImportFiles(files) {
   const rd = $("#importResult");
   if (errors.length === 0) {
     rd.innerHTML = `<div class="import-progress-card">
-      <div style="font-size:1.2rem;font-weight:600;color:var(--success)">✅ ${totalImported} correos importados de ${total} archivos</div>
+      <div style="font-size:1.2rem;font-weight:600;color:var(--success)">✅ ${totalImported} emails imported from ${total} files</div>
     </div>`;
-    toast(`${totalImported} correos importados`);
+    toast(`${totalImported} emails imported`);
   } else {
     rd.innerHTML = `<div class="import-progress-card">
-      <div style="font-size:1rem;font-weight:600;color:var(--success)">✅ ${totalImported} correos importados</div>
-      <div style="font-size:.85rem;color:var(--danger);margin-top:.5rem">❌ ${errors.length} error(es)</div>
+      <div style="font-size:1rem;font-weight:600;color:var(--success)">✅ ${totalImported} emails imported</div>
+      <div style="font-size:.85rem;color:var(--danger);margin-top:.5rem">❌ ${errors.length} error(s)</div>
       <details style="margin-top:.5rem;font-size:.8rem">
-        <summary style="cursor:pointer;color:var(--warning)">Ver errores</summary>
+        <summary style="cursor:pointer;color:var(--warning)">View errors</summary>
         <ul style="margin:.3rem 0 0 1rem;color:var(--text-tertiary);max-height:200px;overflow-y:auto">
           ${errors.map(e => `<li>${esc(e)}</li>`).join("")}
         </ul>
       </details>
     </div>`;
-    toast(`${totalImported} correos importados, ${errors.length} errores`);
+    toast(`${totalImported} emails imported, ${errors.length} errors`);
   }
   const sdiv = $("#sidebarImportProgress");
   const sbar = $("#sidebarImportBar");
   const stxt = $("#sidebarImportText");
   if (sbar) sbar.style.width = "100%";
-  if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${totalImported} correos importados</span>`;
+  if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${totalImported} emails imported</span>`;
   setTimeout(() => { if (sdiv) sdiv.style.display = "none"; }, 5000);
   loadStats();
   loadSidebarAccounts();
@@ -1231,7 +1229,7 @@ async function loadAccountSelect() {
   }
   const opt = document.createElement("option");
   opt.value = "-1";
-  opt.textContent = "➕ Crear nueva cuenta...";
+  opt.textContent = "➕ Create new account...";
   sel.appendChild(opt);
 }
 
@@ -1245,7 +1243,7 @@ function sidebarCancelImport() {
 
   cancelMboxImport(activeImportTask);
 
-  toast("Importación cancelada");
+  toast("Import cancelled");
   const sdiv = $("#sidebarImportProgress");
 
   if (sdiv) {
@@ -1271,7 +1269,7 @@ function updateSidebarImport(s) {
   } else if (s.status === "done") {
     if (sbar) { sbar.style.width = "100%"; sbar.classList.remove("indeterminate"); }
     if (scancel) scancel.style.display = "none";
-    if (stxt) { stxt.textContent = `✅ ${s.imported} correos importados`; stxt.style.color = "var(--success)"; }
+    if (stxt) { stxt.textContent = `✅ ${s.imported} emails imported`; stxt.style.color = "var(--success)"; }
     setTimeout(() => { const sd = $("#sidebarImportProgress"); if (sd) sd.style.display = "none"; }, 5000);
   } else if (s.status === "error") {
     if (scancel) scancel.style.display = "none";
@@ -1313,7 +1311,7 @@ async function checkActiveImports() {
         if (s.status === "processing") {
           let pct = 0;
           if (s.total > 0) pct = Math.min(Math.round((s.current / s.total) * 100), 99);
-          const msg = s.message || `Procesando... ${s.current || 0}/${s.total || 0}`;
+          const msg = s.message || `Processing... ${s.current || 0}/${s.total || 0}`;
           if (sbar) sbar.style.width = pct + "%";
           if (stxt) stxt.textContent = msg;
         }
@@ -1325,9 +1323,9 @@ async function checkActiveImports() {
         const sbtn = $("#sidebarImportCancelBtn");
         if (s.status === "done") {
           if (sbar) sbar.style.width = "100%";
-          if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${s.imported} correos importados</span>`;
+          if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${s.imported} emails imported</span>`;
           if (sbtn) sbtn.remove();
-          toast(`${s.imported} correos importados`);
+          toast(`${s.imported} emails imported`);
           loadStats();
           loadSidebarAccounts();
           setTimeout(() => { const sd = $("#sidebarImportProgress"); if (sd) sd.style.display = "none"; }, 5000);
@@ -1383,7 +1381,7 @@ const MAX_IMPORT_SIZE = 10 * 1024 * 1024 * 1024;
 
 async function handleFile(file) {
   if (file.size > MAX_IMPORT_SIZE) {
-    toast(`Archivo demasiado grande (máx 10GB)`);
+    toast(`File too large (max 10GB)`);
     return;
   }
 
@@ -1403,7 +1401,7 @@ async function handleFile(file) {
   let accountId = parseInt($("#importAccountId").value);
 
   if (accountId === 0) {
-    const name = `Importación ${importCounter}`;
+    const name = `Import ${importCounter}`;
     localStorage.setItem("importCounter", importCounter.toString());
     try {
       const newAccount = await api("/api/accounts", {
@@ -1412,13 +1410,13 @@ async function handleFile(file) {
       });
       accountId = newAccount.id;
     } catch (e) {
-      toast(`Error al crear cuenta: ${e?.message || e || "error desconocido"}`);
+      toast(`Error creating account: ${e?.message || e || "unknown error"}`);
       return;
     }
   } else if (accountId === -1) {
-    const name = prompt("Nombre para la nueva cuenta:", "");
+    const name = prompt("Name for the new account:", "");
     if (!name) return;
-    const email = prompt("Email de la nueva cuenta:", "");
+    const email = prompt("Email for the new account:", "");
     if (!email) return;
     try {
       const newAccount = await api("/api/accounts", {
@@ -1426,9 +1424,9 @@ async function handleFile(file) {
         body: JSON.stringify({ name, email, imap_server: "import", imap_port: 993, imap_use_ssl: true, username: email, password: "", folders: "INBOX" }),
       });
       accountId = newAccount.id;
-      toast(`✅ Cuenta "${name}" creada`);
+      toast(`✅ Account "${name}" created`);
     } catch (e) {
-      toast(`Error al crear cuenta: ${e?.message || e || "error desconocido"}`);
+      toast(`Error creating account: ${e?.message || e || "unknown error"}`);
       return;
     }
   }
@@ -1450,11 +1448,11 @@ async function handleFile(file) {
         </div>
 
         <div class="import-progress-status" id="importStatus">
-          Subiendo archivo...
+          Uploading file...
         </div>
 
         <button id="importCancelBtn" class="import-cancel-btn">
-          Cancelar
+          Cancel
         </button>
       </div>
     `;
@@ -1492,7 +1490,7 @@ async function handleFile(file) {
       xhr.abort();
 
       cancelBtn.disabled = true;
-      cancelBtn.textContent = "Cancelando...";
+      cancelBtn.textContent = "Cancelling...";
 
       if (status) status.innerHTML = `
         <span style="color:var(--warning)">
@@ -1515,8 +1513,8 @@ async function handleFile(file) {
     if (status) {
       status.textContent =
         uploadComplete
-          ? "Procesando correos..."
-          : `Subiendo... ${pct}% (${(e.loaded / (1024 * 1024)).toFixed(1)}/${sizeMB} MB)`;
+          ? "Processing emails..."
+          : `Uploading... ${pct}% (${(e.loaded / (1024 * 1024)).toFixed(1)}/${sizeMB} MB)`;
     }
 
     const sdiv = $("#sidebarImportProgress");
@@ -1530,7 +1528,7 @@ async function handleFile(file) {
     }
 
     if (stxt) {
-      stxt.textContent = status ? status.textContent : "Subiendo archivo...";
+      stxt.textContent = status ? status.textContent : "Uploading file...";
     }
   };
 
@@ -1550,24 +1548,24 @@ async function handleFile(file) {
           }
 
         } catch (e) {
-          reject(new Error("Respuesta inválida"));
+          reject(new Error("Invalid response"));
         }
       };
 
       xhr.onerror = () => {
         if (uploadComplete && !responded) {
-          if (status) status.textContent = "Esperando respuesta del servidor...";
+            if (status) status.textContent = "Waiting for server response...";
           setTimeout(() => {
-            if (!responded) reject(new Error("Error de conexión"));
+            if (!responded) reject(new Error("Connection error"));
           }, 15000);
         } else {
-          reject(new Error("Error de conexión"));
+          reject(new Error("Connection error"));
         }
       };
 
-      xhr.onabort = () => reject(new Error("cancelado"));
+      xhr.onabort = () => reject(new Error("cancelled"));
 
-      xhr.ontimeout = () => reject(new Error("Tiempo agotado"));
+      xhr.ontimeout = () => reject(new Error("Timed out"));
 
       xhr.timeout = 600000;
 
@@ -1588,7 +1586,7 @@ async function handleFile(file) {
 
       if (status) status.innerHTML = `
         <span style="color:var(--success)">
-          ✅ ${response.imported} correos importados
+          ✅ ${response.imported} emails imported
         </span>
       `;
 
@@ -1598,10 +1596,10 @@ async function handleFile(file) {
       const sbar = $("#sidebarImportBar");
       const stxt = $("#sidebarImportText");
       if (sbar) sbar.style.width = "100%";
-      if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${response.imported} correos importados</span>`;
+      if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${response.imported} emails imported</span>`;
       setTimeout(() => { if (sdiv) sdiv.style.display = "none"; }, 5000);
 
-      toast(`${response.imported} correos importados`);
+      toast(`${response.imported} emails imported`);
 
       loadStats();
       loadSidebarAccounts();
@@ -1651,7 +1649,7 @@ async function handleFile(file) {
 
           const msg =
             s.message ||
-            `Procesando... ${s.current || 0}/${s.total || 0}`;
+            `Processing... ${s.current || 0}/${s.total || 0}`;
 
           if (bar) bar.style.width = pct + "%";
           if (status) status.textContent = msg;
@@ -1678,29 +1676,29 @@ async function handleFile(file) {
             const showCount = Math.min(s.errors.length, 20);
             extraHtml = `
               <details style="margin-top:.5rem;font-size:.8rem">
-                <summary style="cursor:pointer;color:var(--warning)">⚠ ${s.errors.length} errores (clic para ver)</summary>
+                <summary style="cursor:pointer;color:var(--warning)">⚠ ${s.errors.length} errors (click to view)</summary>
                 <ul style="margin:.3rem 0 0 1rem;color:var(--text-tertiary);max-height:200px;overflow-y:auto">
                   ${s.errors.slice(0, showCount).map(e => `<li>${esc(e)}</li>`).join("")}
-                  ${s.errors.length > showCount ? `<li>... y ${s.errors.length - showCount} más</li>` : ""}
+                  ${s.errors.length > showCount ? `<li>... and ${s.errors.length - showCount} more</li>` : ""}
                 </ul>
               </details>
             `;
           }
 
-          if (status) status.innerHTML = `
-            <span style="color:var(--success)">
-              ✅ ${s.imported} correos importados
-            </span>
-            ${extraHtml}
-          `;
+      if (status) status.innerHTML = `
+        <span style="color:var(--success)">
+          ✅ ${s.imported} emails imported
+        </span>
+        ${extraHtml}
+      `;
 
           if (cancelBtn) cancelBtn.remove();
 
           if (sbar) sbar.style.width = "100%";
-          if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${s.imported} correos importados</span>`;
+          if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${s.imported} emails imported</span>`;
           if (sbtn) sbtn.remove();
 
-          toast(`${s.imported} correos importados`);
+          toast(`${s.imported} emails imported`);
 
           loadStats();
           loadSidebarAccounts();
@@ -1729,20 +1727,20 @@ async function handleFile(file) {
 
   } catch (e) {
 
-    if (e.message === "cancelado") {
+    if (e.message === "cancelled") {
 
       if (status) status.innerHTML = `
         <span style="color:var(--warning)">
-          ⏹ Importación cancelada
+          ⏹ Import cancelled
         </span>
       `;
 
       return;
     }
 
-    if (e.message === "Error de conexión" && uploadComplete) {
+    if (e.message === "Connection error" && uploadComplete) {
 
-      if (status) status.textContent = "Esperando procesamiento...";
+      if (status) status.textContent = "Waiting for processing...";
 
       let retries = 0;
 
@@ -1761,7 +1759,7 @@ async function handleFile(file) {
             importTasks.set(tid, ct);
             activeImportTask = tid;
 
-            if (status) status.textContent = "Procesando correos...";
+            if (status) status.textContent = "Processing emails...";
 
             startImportPolling(tid, {
               onUpdate(s) {
@@ -1770,7 +1768,7 @@ async function handleFile(file) {
                 if (s.status === "processing") {
                   let pct = 0;
                   if (s.total > 0) pct = Math.min(Math.round((s.current / s.total) * 100), 99);
-                  const msg = s.message || `Procesando... ${s.current || 0}/${s.total || 0}`;
+                  const msg = s.message || `Processing... ${s.current || 0}/${s.total || 0}`;
                   if (bar) bar.style.width = pct + "%";
                   if (status) status.textContent = msg;
                   if (sbar) sbar.style.width = pct + "%";
@@ -1780,9 +1778,9 @@ async function handleFile(file) {
               onDone(s) {
                 if (s.status === "done") {
                   if (bar) bar.style.width = "100%";
-                  if (status) status.innerHTML = `<span style="color:var(--success)">✅ ${s.imported} correos importados</span>`;
+                  if (status) status.innerHTML = `<span style="color:var(--success)">              ✅ ${s.imported} emails imported</span>`;
                   if (cancelBtn) cancelBtn.remove();
-                  toast(`${s.imported} correos importados`);
+                  toast(`${s.imported} emails imported`);
                   loadStats();
                   loadSidebarAccounts();
                 } else if (s.status === "error") {
@@ -1795,7 +1793,7 @@ async function handleFile(file) {
                 const sbtn = $("#sidebarImportCancelBtn");
                 if (s.status === "done") {
                   if (sbar) sbar.style.width = "100%";
-                  if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${s.imported} correos importados</span>`;
+                  if (stxt) stxt.innerHTML = `<span style="color:var(--success)">✅ ${s.imported} emails imported</span>`;
                   if (sbtn) sbtn.remove();
                 } else if (s.status === "error") {
                   if (sbar) sbar.style.background = "var(--danger)";
@@ -1813,7 +1811,7 @@ async function handleFile(file) {
         if (retries < 10) {
           setTimeout(findTask, 2000);
         } else {
-          if (status) status.innerHTML = `<span style="color:var(--danger)">❌ Error de conexión</span>`;
+          if (status) status.innerHTML = `<span style="color:var(--danger)">❌ Connection error</span>`;
         }
       };
 
@@ -1871,7 +1869,7 @@ function updateAccountSelectionToolbar() {
   if (!toolbar) return;
   if (selectedAccountIds.size > 0) {
     toolbar.style.display = "flex";
-    count.textContent = `${selectedAccountIds.size} seleccionadas`;
+    count.textContent = `${selectedAccountIds.size} selected`;
   } else {
     toolbar.style.display = "none";
   }
@@ -1884,27 +1882,27 @@ function updateAccountSelectionToolbar() {
 
 async function batchDeleteAccounts() {
   const ids = getSelectedAccountIds();
-  if (ids.length === 0) { toast("No hay cuentas seleccionadas"); return; }
+  if (ids.length === 0) { toast("No accounts selected"); return; }
 
-  const cuentaWord = ids.length === 1 ? "cuenta" : "cuentas";
+  const cuentaWord = ids.length === 1 ? "account" : "accounts";
   const N = ids.length;
 
   openModal(`<div style="text-align:center">
     <div style="font-size:2.5rem;margin-bottom:.75rem">🗑</div>
-    <h3 style="margin-bottom:.25rem">Eliminar ${N} ${cuentaWord}</h3>
+    <h3 style="margin-bottom:.25rem">Delete ${N} ${cuentaWord}</h3>
     <p style="color:var(--text-tertiary);font-size:.85rem;margin-bottom:1.5rem">
-      ¿Qué deseas hacer con las ${N} ${cuentaWord} seleccionadas?
+      What do you want to do with the selected ${N} ${cuentaWord}?
     </p>
     <div style="display:flex;flex-direction:column;gap:.5rem">
       <button class="confirm-btn danger" onclick="doBatchDelete(false, ${N})">
-        🗑 Solo eliminar cuentas
-        <span style="display:block;font-size:.72rem;font-weight:400;opacity:.7">Los correos importados se conservan</span>
+        🗑 Delete accounts only
+        <span style="display:block;font-size:.72rem;font-weight:400;opacity:.7">Imported emails are kept</span>
       </button>
       <button class="confirm-btn danger-full" onclick="doBatchDelete(true, ${N})">
-        🔥 Eliminar cuentas y sus correos
-        <span style="display:block;font-size:.72rem;font-weight:400;opacity:.7">Se borra todo, no se puede deshacer</span>
+        🔥 Delete accounts and their emails
+        <span style="display:block;font-size:.72rem;font-weight:400;opacity:.7">Everything is deleted, cannot be undone</span>
       </button>
-      <button class="confirm-btn cancel" data-action="close-modal">Cancelar</button>
+      <button class="confirm-btn cancel" data-action="close-modal">Cancel</button>
     </div>
   </div>`);
 }
@@ -1918,7 +1916,7 @@ function getSelectedAccountIds() {
 async function doBatchDelete(deleteEmails, expectedCount) {
   closeModal();
   const ids = getSelectedAccountIds();
-  if (ids.length === 0) { toast("Error: no hay cuentas seleccionadas"); return; }
+  if (ids.length === 0) { toast("Error: no accounts selected"); return; }
   selectedAccountIds.clear();
   updateAccountSelectionToolbar();
 
@@ -1966,36 +1964,36 @@ function showBatchDeleteProgress(task_id, total, deleteEmails) {
         if (s.status === "running" || s.status === "cancelling") {
           if (sbar) sbar.style.width = pct + "%";
           if (stxt) {
-            if (s.phase === "Eliminando correos") {
-              stxt.textContent = `Eliminando correos: ${s.current} de ${s.total}`;
-            } else if (s.phase === "Eliminando carpetas") {
-              stxt.textContent = `Eliminando carpetas... ${pct}%`;
-            } else if (s.phase === "Eliminando cuentas") {
-              stxt.textContent = `Eliminando cuentas... ${pct}%`;
-            } else if (s.phase === "Guardando cambios...") {
-              stxt.textContent = `Guardando cambios... ${pct}%`;
-            } else {
-              stxt.textContent = `${s.phase || "Procesando..."} ${pct}%`;
+      if (s.phase === "Deleting emails") {
+        stxt.textContent = `Deleting emails: ${s.current} of ${s.total}`;
+      } else if (s.phase === "Deleting folders") {
+        stxt.textContent = `Deleting folders... ${pct}%`;
+      } else if (s.phase === "Deleting accounts") {
+        stxt.textContent = `Deleting accounts... ${pct}%`;
+      } else if (s.phase === "Saving changes...") {
+        stxt.textContent = `Saving changes... ${pct}%`;
+      } else {
+        stxt.textContent = `${s.phase || "Processing..."} ${pct}%`;
             }
           }
           poll();
         } else if (s.status === "done") {
           const msg = deleteEmails
-            ? `${s.deleted} cuenta(s) y sus correos eliminados`
-            : `${s.deleted} cuenta(s) eliminadas (correos conservados)`;
+            ? `${s.deleted} account(s) and their emails deleted`
+            : `${s.deleted} account(s) deleted (emails kept)`;
           done(true, msg);
         } else if (s.status === "cancelled") {
           const msg = deleteEmails
-            ? `Cancelada (${s.deleted} cuenta(s) eliminadas)`
-            : `Cancelada`;
+            ? `Cancelled (${s.deleted} account(s) deleted)`
+            : `Cancelled`;
           done(true, msg);
         } else if (s.status === "error") {
-          done(false, s.error || "Error desconocido");
+          done(false, s.error || "Unknown error");
         }
       } catch (e) {
         retries++;
         if (retries >= MAX_RETRIES) {
-          done(false, "Error de conexión");
+          done(false, "Connection error");
           return;
         }
         poll();
@@ -2083,7 +2081,7 @@ async function startImportPolling(task_id, handlers = {}) {
 async function cancelBatchDelete(task_id) {
   try {
     await api(`/api/accounts/batch-delete/${task_id}/cancel`, { method: "POST" });
-    toast("Cancelando eliminación...");
+    toast("Cancelling deletion...");
   } catch (e) {
     toast(`Error: ${e.message}`);
   }

@@ -75,14 +75,14 @@ function downloadBlob(url, filename) {
       document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
     })
-    .catch(() => toast("Error al descargar"));
+    .catch(() => toast("Download error"));
 }
 
 function exportMbox(url, filename) {
   openModal(`<div style="text-align:center;min-width:280px">
     <div style="font-size:2.5rem;margin-bottom:.5rem">📦</div>
-    <h3 style="margin-bottom:.25rem;font-size:1rem">Exportando MBOX...</h3>
-    <p style="font-size:.82rem;color:var(--text-tertiary);margin-top:.5rem">Generando archivo, esto puede tomar unos segundos</p>
+    <h3 style="margin-bottom:.25rem;font-size:1rem">Exporting MBOX...</h3>
+    <p style="font-size:.82rem;color:var(--text-tertiary);margin-top:.5rem">Generating file, this may take a few seconds</p>
     <div class="import-progress-bar" style="margin:.75rem 0">
       <div class="import-progress-bar-fill" style="width:100%;animation:pulse 1.5s infinite"></div>
     </div>
@@ -95,7 +95,7 @@ function exportMbox(url, filename) {
   }
   fetch(url, { headers: authHeaders() })
     .then(r => {
-      if (!r.ok) throw new Error("Error al exportar");
+      if (!r.ok) throw new Error("Export error");
       return r.blob();
     })
     .then(blob => {
@@ -107,7 +107,7 @@ function exportMbox(url, filename) {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(a.href);
-      toast("✅ Exportación completada");
+      toast("✅ Export complete");
     })
     .catch(e => {
       const st = $("#exportMboxStatus");
@@ -118,7 +118,7 @@ function exportMbox(url, filename) {
 
 function exportSelectedMbox() {
   const ids = [...selectedIds];
-  if (!ids.length) { toast("Seleccioná al menos un correo"); return; }
+  if (!ids.length) { toast("Select at least one email"); return; }
   exportMbox(`/api/emails/export-mbox-by-ids?ids=${ids.join(",")}`, `mailsilo-export-${ids.length}emails.mbox`);
 }
 

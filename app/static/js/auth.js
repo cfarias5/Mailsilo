@@ -34,18 +34,18 @@ function renderLoginForm(msg) {
     <div class="auth-card">
       <div class="logo-area">
         <img src="/static/logo-dark.png" alt="MailSilo">
-        <p>Inicia sesión</p>
+        <p>Sign in</p>
       </div>
       <div class="auth-error" id="loginError" style="display:${errDisplay}">${esc(msg)}</div>
       <div class="auth-field">
-        <label for="loginUser">Usuario</label>
+        <label for="loginUser">Username</label>
         <input type="text" id="loginUser" autocomplete="username" autofocus>
       </div>
       <div class="auth-field">
-        <label for="loginPassword">Contraseña</label>
+        <label for="loginPassword">Password</label>
         <input type="password" id="loginPassword" autocomplete="current-password">
       </div>
-      <button class="auth-btn" data-action="login">Entrar</button>
+      <button class="auth-btn" data-action="login">Sign in</button>
     </div>
   </div>`;
   updateLogo();
@@ -56,22 +56,22 @@ function showSetup() {
     <div class="auth-card">
       <div class="logo-area">
         <img src="/static/logo-dark.png" alt="MailSilo">
-        <p>Crear administrador</p>
+        <p>Create admin</p>
       </div>
       <div class="auth-error" id="setupError"></div>
       <div class="auth-field">
-        <label for="setupUser">Usuario</label>
+        <label for="setupUser">Username</label>
         <input type="text" id="setupUser" autocomplete="username" autofocus>
       </div>
       <div class="auth-field">
-        <label for="setupPassword">Contraseña</label>
+        <label for="setupPassword">Password</label>
         <input type="password" id="setupPassword" autocomplete="new-password">
       </div>
       <div class="auth-field">
-        <label for="setupConfirm">Confirmar contraseña</label>
+        <label for="setupConfirm">Confirm password</label>
         <input type="password" id="setupConfirm" autocomplete="new-password">
       </div>
-      <button class="auth-btn" data-action="setup">Crear cuenta</button>
+      <button class="auth-btn" data-action="setup">Create account</button>
     </div>
   </div>`;
   updateLogo();
@@ -82,22 +82,22 @@ async function doSetup() {
   const pw = $("#setupPassword").value;
   const confirm = $("#setupConfirm").value;
   if (username.length < 2) {
-    $("#setupError").textContent = "El usuario debe tener al menos 2 caracteres";
+    $("#setupError").textContent = "Username must be at least 2 characters";
     $("#setupError").style.display = "block";
     return;
   }
   if (pw.length < 8) {
-    $("#setupError").textContent = "La contraseña debe tener al menos 8 caracteres";
+    $("#setupError").textContent = "Password must be at least 8 characters";
     $("#setupError").style.display = "block";
     return;
   }
   if (!/[A-Z]/.test(pw) || !/[a-z]/.test(pw) || !/[0-9]/.test(pw)) {
-    $("#setupError").textContent = "La contraseña debe tener mayúscula, minúscula y número";
+    $("#setupError").textContent = "Password must include uppercase, lowercase and a number";
     $("#setupError").style.display = "block";
     return;
   }
   if (pw !== confirm) {
-    $("#setupError").textContent = "Las contraseñas no coinciden";
+    $("#setupError").textContent = "Passwords do not match";
     $("#setupError").style.display = "block";
     return;
   }
@@ -109,7 +109,7 @@ async function doSetup() {
     });
     if (!res.ok) {
       const err = await res.json();
-      $("#setupError").textContent = err.detail || "Error al crear cuenta";
+      $("#setupError").textContent = err.detail || "Error creating account";
       $("#setupError").style.display = "block";
       return;
     }
@@ -118,7 +118,7 @@ async function doSetup() {
     localStorage.setItem("mailsilo_token", AUTH_TOKEN);
     location.reload();
   } catch (e) {
-    $("#setupError").textContent = "Error de conexión";
+    $("#setupError").textContent = "Connection error";
     $("#setupError").style.display = "block";
   }
 }
@@ -127,7 +127,7 @@ async function doLogin() {
   const username = $("#loginUser").value.trim();
   const pw = $("#loginPassword").value;
   if (!username) {
-    renderLoginForm("Ingresa tu usuario");
+    renderLoginForm("Enter your username");
     return;
   }
   try {
@@ -138,7 +138,7 @@ async function doLogin() {
     });
     if (!res.ok) {
       const err = await res.json();
-      renderLoginForm(err.detail || "Usuario o contraseña incorrectos");
+      renderLoginForm(err.detail || "Invalid username or password");
       return;
     }
     const data = await res.json();
@@ -146,6 +146,6 @@ async function doLogin() {
     localStorage.setItem("mailsilo_token", AUTH_TOKEN);
     location.reload();
   } catch (e) {
-    renderLoginForm("Error de conexión");
+    renderLoginForm("Connection error");
   }
 }

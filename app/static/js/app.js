@@ -16,9 +16,9 @@ async function renderView() {
       case "inbox": await renderInbox(); break;
       case "folder": if (state.folder) { await renderFolder(); } else { await renderInbox(); } break;
       case "search": await renderSearch(); break;
-      case "accounts": setSplitView(false); setListTitle("Cuentas", ""); showDetailEmpty(); await renderAccounts(); break;
-      case "import": setSplitView(false); setListTitle("Importar", ""); showDetailEmpty(); await renderImport(); break;
-      case "settings": setSplitView(false); setListTitle("Configuración", ""); showDetailEmpty(); await renderSettings(); break;
+      case "accounts": setSplitView(false); setListTitle("Accounts", ""); showDetailEmpty(); await renderAccounts(); break;
+      case "import": setSplitView(false); setListTitle("Import", ""); showDetailEmpty(); await renderImport(); break;
+      case "settings": setSplitView(false); setListTitle("Settings", ""); showDetailEmpty(); await renderSettings(); break;
     }
   } catch (e) {
     $("#listPanelBody").innerHTML = `<div class="empty-state">Error: ${e.message}</div>`;

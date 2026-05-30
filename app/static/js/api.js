@@ -11,7 +11,7 @@ async function api(path, opts = {}) {
     AUTH_TOKEN = "";
     localStorage.removeItem("mailsilo_token");
     showLogin();
-    throw new Error("Sesión expirada");
+    throw new Error("Session expired");
   }
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }));

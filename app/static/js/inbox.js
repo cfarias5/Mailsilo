@@ -18,13 +18,13 @@ async function renderInbox() {
   const selectedId = state.selectedEmailId;
 
   setSplitView(true);
-  setListTitle("Correos", `${total} correos`);
+  setListTitle("Emails", `${total} emails`);
 
   const dp = $("#detailPanel");
   if (dp) dp.classList.remove("show-mobile");
 
   if (tree.length === 0) {
-    $("#listPanelBody").innerHTML = `<div class="empty-state">No hay correos. Añade una cuenta o importa un archivo.</div>`;
+    $("#listPanelBody").innerHTML = `<div class="empty-state">No emails. Add an account or import a file.</div>`;
     if (!selectedId) showDetailEmpty();
     return;
   }
@@ -41,7 +41,7 @@ async function renderInbox() {
   const filteredTotal = items.reduce((s, i) => s + i.count, 0);
 
   // Build grouped dropdown options
-  let ddOptions = `<option value="">📂 Todas las carpetas (${total} correos)</option>`;
+  let ddOptions = `<option value="">📂 All folders (${total} emails)</option>`;
   for (const acct of tree) {
     const name = acct.account_name || acct.account_email;
     const shortName = name.replace(/@.*$/, "");
@@ -56,7 +56,7 @@ async function renderInbox() {
   </div>`;
 
   if (items.length === 0) {
-    html += `<div class="empty-state">Sin correos en esta carpeta</div>`;
+    html += `<div class="empty-state">No emails in this folder</div>`;
     $("#listPanelBody").innerHTML = html;
     return;
   }
@@ -83,9 +83,9 @@ async function showFolder(accountEmail, folderName, accountId) {
 function sortToolbarHtml() {
   const dir = state.sortOrder === "asc" ? "↑" : "↓";
   const opts = [
-    { value: "date", label: "Fecha" },
-    { value: "subject", label: "Asunto" },
-    { value: "sender", label: "Remitente" },
+    { value: "date", label: "Date" },
+    { value: "subject", label: "Subject" },
+    { value: "sender", label: "From" },
   ].map(o => `<option value="${o.value}" ${state.sortBy === o.value ? "selected" : ""}>${o.label}</option>`).join("");
   return `<div class="sort-bar">
     <select id="sortBySelect" onchange="state.sortBy=this.value; state.folder.page=1; renderFolder()">${opts}</select>
@@ -98,7 +98,7 @@ async function renderFolder() {
   const data = await api(`/api/emails?folder=${encodeURIComponent(f.folderName)}&account_id=${f.accountId}&page=${f.page}&per_page=50&sort_by=${state.sortBy}&sort_order=${state.sortOrder}`);
 
   setSplitView(true);
-  setListTitle(`${esc(f.folderName)}`, `${data.total} correos · ${esc(f.accountEmail)}`);
+  setListTitle(`${esc(f.folderName)}`, `${data.total} emails · ${esc(f.accountEmail)}`);
   showDetailEmpty();
   selectedIds.clear();
   updateSelectionToolbar();
@@ -109,9 +109,9 @@ async function renderFolder() {
   }
 
   let html = `<div class="selection-toolbar" id="selectionToolbar" style="display:none">
-    <label class="select-all-label"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)"> <span id="selectionCount">0 seleccionados</span></label>
-    <button class="btn-sm danger" data-action="delete-selected">🗑 Eliminar seleccionados</button>
-    <button class="btn-sm" data-action="export-selected">📦 Exportar seleccionados</button>
+    <label class="select-all-label"><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this.checked)"> <span id="selectionCount">0 selected</span></label>
+    <button class="btn-sm danger" data-action="delete-selected">🗑 Delete selected</button>
+    <button class="btn-sm" data-action="export-selected">📦 Export selected</button>
   </div>`;
   html += sortToolbarHtml();
   for (const e of data.items) {
@@ -138,10 +138,10 @@ function renderEmailListItem(e) {
     <div class="email-avatar${hasAtt ? " has-attachment" : ""}" style="background:${colors[colorIdx]}">${initials}</div>
     <div class="email-content">
       <div class="email-row1">
-        <span class="email-sender">${esc(e.sender_name || e.sender_email || "(desconocido)")}</span>
+        <span class="email-sender">${esc(e.sender_name || e.sender_email || "(unknown)")}</span>
         <span class="email-date">${date}</span>
       </div>
-      <div class="email-subject">${esc(e.subject || "(sin asunto)")}</div>
+      <div class="email-subject">${esc(e.subject || "(no subject)")}</div>
       <div class="email-preview">${esc(preview)}</div>
     </div>
   </div>`;
@@ -153,12 +153,12 @@ function formatDate(dateStr) {
   const diff = now - d;
   const oneDay = 86400000;
   if (diff < oneDay && d.getDate() === now.getDate()) {
-    return d.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleTimeString("en", { hour: "2-digit", minute: "2-digit" });
   }
   if (diff < 7 * oneDay) {
-    return d.toLocaleDateString("es", { weekday: "short" });
+    return d.toLocaleDateString("en", { weekday: "short" });
   }
-  return d.toLocaleDateString("es", { day: "2-digit", month: "2-digit", year: "2-digit" });
+  return d.toLocaleDateString("en", { day: "2-digit", month: "2-digit", year: "2-digit" });
 }
 
 async function showEmail(id) {
@@ -185,7 +185,7 @@ async function showEmail(id) {
   const listItem = $(`.email-list-item[data-email-id="${id}"]`);
   if (listItem) listItem.classList.add("selected");
 
-  $("#detailBody").innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary)">Cargando...</div>';
+  $("#detailBody").innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary)">Loading...</div>';
 
   if (!emailCache[id]) {
     emailCache[id] = api(`/api/emails/${id}`).catch((err) => {
@@ -198,7 +198,7 @@ async function showEmail(id) {
     e = await emailCache[id];
     cacheSet(id, e);
   } catch (e) {
-    $("#detailBody").innerHTML = '<div style="text-align:center;padding:2rem;color:var(--danger)">Error al cargar el correo</div>';
+    $("#detailBody").innerHTML = '<div style="text-align:center;padding:2rem;color:var(--danger)">Error loading email</div>';
     return;
   }
 
@@ -217,17 +217,17 @@ async function showEmail(id) {
   detailEmpty.style.display = "none";
 
   // Subject
-  $("#detailSubject").textContent = e.subject || "(sin asunto)";
+  $("#detailSubject").textContent = e.subject || "(no subject)";
 
   // Meta
   let metaHtml = "";
   const metaFields = [
-    ["De:", `${esc(e.sender_name || e.sender_email)} <a href="mailto:${esc(e.sender_email)}">${esc(e.sender_email)}</a>`],
-    ["Para:", esc(e.recipients_to || "")],
+    ["From:", `${esc(e.sender_name || e.sender_email)} <a href="mailto:${esc(e.sender_email)}">${esc(e.sender_email)}</a>`],
+    ["To:", esc(e.recipients_to || "")],
   ];
   if (e.recipients_cc) metaFields.push(["CC:", esc(e.recipients_cc)]);
-  metaFields.push(["Fecha:", e.date ? new Date(e.date).toLocaleString("es") : ""]);
-  if (e.folder) metaFields.push(["Carpeta:", esc(e.folder)]);
+  metaFields.push(["Date:", e.date ? new Date(e.date).toLocaleString("en") : ""]);
+  if (e.folder) metaFields.push(["Folder:", esc(e.folder)]);
 
   for (const [label, value] of metaFields) {
     metaHtml += `<div class="detail-meta-row"><span class="detail-meta-label">${label}</span><span class="detail-meta-value">${value}</span></div>`;
@@ -250,7 +250,7 @@ async function showEmail(id) {
   // Attachments
   const attEl = $("#detailAttachments");
   if (e.attachments && e.attachments.length > 0) {
-    let attHtml = `<div class="detail-attachments-label">${e.attachments.length} adjunto(s)</div>`;
+    let attHtml = `<div class="detail-attachments-label">${e.attachments.length} attachment(s)</div>`;
     for (const a of e.attachments) {
       if (isImageType(a.content_type)) {
         attHtml += `<a href="/api/emails/${e.id}/attachment/${a.id}?token=${esc(AUTH_TOKEN)}" target="_blank" class="detail-attachment-item">
@@ -270,32 +270,32 @@ async function showEmail(id) {
 
   // Actions
   $("#detailActions").innerHTML = `
-    <button class="primary" data-action="export-eml" data-email-id="${e.id}">📥 Exportar</button>
-    <button data-action="forward-email" data-email-id="${e.id}">📤 Reenviar</button>
-    <button class="danger" data-action="delete-email" data-email-id="${e.id}">🗑 Eliminar</button>
-    <button style="margin-left:auto" data-action="nav" data-view="${state.view === "search" ? "search" : "inbox"}">← Volver</button>
+    <button class="primary" data-action="export-eml" data-email-id="${e.id}">📥 Export</button>
+    <button data-action="forward-email" data-email-id="${e.id}">📤 Forward</button>
+    <button class="danger" data-action="delete-email" data-email-id="${e.id}">🗑 Delete</button>
+    <button style="margin-left:auto" data-action="nav" data-view="${state.view === "search" ? "search" : "inbox"}">← Back</button>
   `;
 }
 
 async function deleteEmail(id) {
-  if (!confirm("¿Eliminar este correo?")) return;
+  if (!confirm("Delete this email?")) return;
   await api(`/api/emails/${id}`, { method: "DELETE" });
   if (state.selectedEmailId === id) {
     state.selectedEmailId = null;
     showDetailEmpty();
   }
-  toast("Correo eliminado");
+  toast("Email deleted");
   renderView();
 }
 
 async function forwardEmail(id) {
-  openModal(`<h3 style="margin-bottom:16px">📤 Reenviar correo</h3>
+  openModal(`<h3 style="margin-bottom:16px">📤 Forward email</h3>
     <form id="forwardForm">
-      <div class="form-group"><label>Destinatario</label><input name="to" type="email" placeholder="correo@ejemplo.com" required></div>
-      <div style="font-size:.78rem;color:var(--text-tertiary);margin-bottom:.5rem">Se enviará desde el servidor SMTP configurado en Ajustes. El correo original irá adjunto como cita.</div>
+      <div class="form-group"><label>Recipient</label><input name="to" type="email" placeholder="email@example.com" required></div>
+      <div style="font-size:.78rem;color:var(--text-tertiary);margin-bottom:.5rem">Will be sent via the SMTP server configured in Settings. The original email will be attached as a quote.</div>
       <div class="form-actions" style="margin-top:1rem">
-        <button type="submit" class="primary" data-action="send-forward">📤 Enviar</button>
-        <button class="outline" type="button" data-action="close-modal">Cancelar</button>
+        <button type="submit" class="primary" data-action="send-forward">📤 Send</button>
+        <button class="outline" type="button" data-action="close-modal">Cancel</button>
       </div>
     </form>`, { closable: false });
   const form = $("#forwardForm");
@@ -305,18 +305,18 @@ async function forwardEmail(id) {
     if (!to) return;
     const btn = form.querySelector("[data-action=send-forward]");
     btn.disabled = true;
-    btn.textContent = "Enviando...";
+    btn.textContent = "Sending...";
     try {
       await api(`/api/emails/${id}/forward`, {
         method: "POST",
         body: JSON.stringify({ to }),
       });
       closeModal();
-      toast(`✅ Correo reenviado a ${to}`);
+      toast(`✅ Email forwarded to ${to}`);
     } catch (e) {
       toast(`Error: ${e.message}`);
       btn.disabled = false;
-      btn.textContent = "📤 Enviar";
+      btn.textContent = "📤 Send";
     }
   };
 }
@@ -347,7 +347,7 @@ function renderSidebarAccounts(tree) {
   const container = $("#sidebarAccounts");
   if (!container) return;
   if (!tree || tree.length === 0) {
-    container.innerHTML = `<div style="padding:.5rem .75rem;font-size:.78rem;color:var(--text-tertiary)">Sin cuentas</div>`;
+    container.innerHTML = `<div style="padding:.5rem .75rem;font-size:.78rem;color:var(--text-tertiary)">No accounts</div>`;
     return;
   }
   let html = "";
@@ -370,13 +370,13 @@ function renderSidebarAccounts(tree) {
 
 async function renderSearch() {
   setSplitView(false);
-  setListTitle("Buscar", "");
+  setListTitle("Search", "");
   showDetailEmpty();
-  let html = `<div class="page-header-body"><h2>🔍 Buscar correos</h2></div>
+  let html = `<div class="page-header-body"><h2>🔍 Search emails</h2></div>
   <div class="search-bar">
     <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-    <input type="text" id="searchInput" placeholder="Buscar por asunto, remitente o contenido..." value="${esc(state.query)}" autofocus>
-    <button class="btn-small primary" data-action="search">Buscar</button>
+    <input type="text" id="searchInput" placeholder="Search by subject, from or content..." value="${esc(state.query)}" autofocus>
+    <button class="btn-small primary" data-action="search">Search</button>
   </div>
   <div id="searchResults"></div>`;
   $("#listPanelBody").innerHTML = html;
@@ -386,9 +386,9 @@ async function renderSearch() {
 function sortSearchToolbarHtml() {
   const dir = state.sortOrder === "asc" ? "↑" : "↓";
   const opts = [
-    { value: "date", label: "Fecha" },
-    { value: "subject", label: "Asunto" },
-    { value: "sender", label: "Remitente" },
+    { value: "date", label: "Date" },
+    { value: "subject", label: "Subject" },
+    { value: "sender", label: "From" },
   ].map(o => `<option value="${o.value}" ${state.sortBy === o.value ? "selected" : ""}>${o.label}</option>`).join("");
   return `<div class="sort-bar" style="margin-bottom:.5rem">
     <select id="sortBySearch" onchange="state.sortBy=this.value; doSearch(1)">${opts}</select>
@@ -403,12 +403,12 @@ async function doSearch(page = 1) {
   const data = await api(`/api/emails?q=${encodeURIComponent(state.query)}&page=${page}&per_page=50&sort_by=${state.sortBy}&sort_order=${state.sortOrder}`);
   const container = $("#searchResults");
   if (data.items.length === 0) {
-    container.innerHTML = `<div class="empty-state">Sin resultados para "${esc(state.query)}"</div>`;
+    container.innerHTML = `<div class="empty-state">No results for "${esc(state.query)}"</div>`;
     return;
   }
   let html = `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;padding:0 .5rem">
-    <span style="color:var(--text-secondary);font-size:.82rem">${data.total} resultado(s)</span>
-    <button class="btn-small" data-action="export-mbox-search">📦 Exportar MBOX</button>
+    <span style="color:var(--text-secondary);font-size:.82rem">${data.total} result(s)</span>
+    <button class="btn-small" data-action="export-mbox-search">📦 Export MBOX</button>
   </div>`;
   html += sortSearchToolbarHtml();
   for (const e of data.items) {
@@ -440,7 +440,7 @@ function updateSelectionToolbar() {
   if (!toolbar) return;
   if (selectedIds.size > 0) {
     toolbar.style.display = "flex";
-    count.textContent = `${selectedIds.size} seleccionados`;
+    count.textContent = `${selectedIds.size} selected`;
   } else {
     toolbar.style.display = "none";
   }
@@ -453,7 +453,7 @@ function updateSelectionToolbar() {
 
 async function batchDeleteEmails() {
   if (selectedIds.size === 0) return;
-  if (!confirm(`¿Eliminar ${selectedIds.size} correo(s)?`)) return;
+  if (!confirm(`Delete ${selectedIds.size} email(s)?`)) return;
   try {
     await api("/api/emails/batch-delete", {
       method: "POST",
@@ -462,7 +462,7 @@ async function batchDeleteEmails() {
     });
     const count = selectedIds.size;
     selectedIds.clear();
-    toast(`${count} correo(s) eliminados`);
+    toast(`${count} email(s) deleted`);
     renderView();
   } catch (e) {
     toast(`Error: ${e.message}`);

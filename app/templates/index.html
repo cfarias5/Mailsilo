@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,57 +21,57 @@
         <span>MailSilo</span>
       </div>
 
-      <div class="nav-section-label">Navegación</div>
+      <div class="nav-section-label">Navigation</div>
       <nav class="nav">
         <div class="nav-item active" data-view="inbox">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          <span>Correos</span>
+          <span>Emails</span>
         </div>
         <div class="nav-item" data-view="search">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-          <span>Buscar</span>
+          <span>Search</span>
         </div>
         <div class="nav-item" data-view="accounts">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Cuentas</span>
+          <span>Accounts</span>
         </div>
         <div class="nav-item" data-view="import">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Importar</span>
+          <span>Import</span>
         </div>
         <div class="nav-item" data-view="settings">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-          <span>Configuración</span>
+          <span>Settings</span>
         </div>
       </nav>
 
       <div id="sidebarImportProgress" style="display:none;padding:.5rem .75rem;border-top:1px solid var(--border);margin-top:.5rem">
-        <div style="font-size:.75rem;color:var(--accent);margin-bottom:.25rem">📥 Importando...</div>
+        <div style="font-size:.75rem;color:var(--accent);margin-bottom:.25rem">📥 Importing...</div>
         <div style="background:var(--surface-2);border-radius:999px;height:4px;overflow:hidden">
           <div id="sidebarImportBar" style="width:0%;height:100%;background:var(--accent);border-radius:999px;transition:width .3s"></div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.2rem">
-          <div id="sidebarImportText" style="font-size:.7rem;color:var(--text-tertiary)">Iniciando...</div>
-          <button id="sidebarImportCancelBtn" onclick="sidebarCancelImport()" style="font-size:.65rem;padding:2px 6px;background:none;border:1px solid var(--danger);color:var(--danger);border-radius:4px;cursor:pointer">Cancelar</button>
+          <div id="sidebarImportText" style="font-size:.7rem;color:var(--text-tertiary)">Starting...</div>
+          <button id="sidebarImportCancelBtn" onclick="sidebarCancelImport()" style="font-size:.65rem;padding:2px 6px;background:none;border:1px solid var(--danger);color:var(--danger);border-radius:4px;cursor:pointer">Cancel</button>
         </div>
       </div>
 
-      <div class="nav-section-label" style="margin-top:.5rem">Cuentas</div>
+      <div class="nav-section-label" style="margin-top:.5rem">Accounts</div>
       <div id="sidebarAccounts"></div>
 
       <div id="sidebarDeleteProgress" style="display:none;padding:.5rem .75rem;border-top:1px solid var(--border);margin-top:.5rem">
-        <div style="font-size:.75rem;color:var(--danger);margin-bottom:.25rem">🗑 Eliminando...</div>
+        <div style="font-size:.75rem;color:var(--danger);margin-bottom:.25rem">🗑 Deleting...</div>
         <div style="background:var(--surface-2);border-radius:999px;height:4px;overflow:hidden">
           <div id="sidebarDeleteBar" style="width:0%;height:100%;background:var(--danger);border-radius:999px;transition:width .3s"></div>
         </div>
-        <div id="sidebarDeleteText" style="font-size:.7rem;color:var(--text-tertiary);margin-top:.2rem">Iniciando...</div>
+        <div id="sidebarDeleteText" style="font-size:.7rem;color:var(--text-tertiary);margin-top:.2rem">Starting...</div>
       </div>
 
       <div class="sidebar-divider"></div>
 
       <div class="sidebar-footer">
-      <span id="stats">0 correos</span>
-      <button id="logoutBtn" class="btn-topbar" style="width:100%;justify-content:center" data-action="logout">Cerrar sesión</button>
+      <span id="stats">0 emails</span>
+      <button id="logoutBtn" class="btn-topbar" style="width:100%;justify-content:center" data-action="logout">Log out</button>
     </div>
   </aside>
 
@@ -79,10 +79,10 @@
   <main class="main">
 
     <header class="topbar">
-      <span class="topbar-title" id="topbarTitle">Correos</span>
+      <span class="topbar-title" id="topbarTitle">Emails</span>
       <div class="topbar-search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="search" id="searchInputTop" placeholder="Buscar correos...">
+        <input type="search" id="searchInputTop" placeholder="Search emails...">
       </div>
       <div class="topbar-actions" id="topbarActions">
       </div>
@@ -91,7 +91,7 @@
     <div class="split-view full-width" id="splitView">
       <div class="list-panel" id="listPanel">
         <div class="list-panel-header" id="listPanelHeader">
-          <span id="listPanelTitle">Correos</span>
+          <span id="listPanelTitle">Emails</span>
           <span id="listPanelCount"></span>
         </div>
         <div class="list-panel-body" id="listPanelBody">
@@ -101,7 +101,7 @@
       <div class="detail-panel" id="detailPanel">
         <div class="detail-empty" id="detailEmpty">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-          <span style="font-size:.9rem">Selecciona un correo para leerlo</span>
+          <span style="font-size:.9rem">Select an email to read</span>
         </div>
         <div id="detailContent" style="display:none;flex-direction:column;height:100%">
           <div class="detail-header">
