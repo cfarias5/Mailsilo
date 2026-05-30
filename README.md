@@ -1,73 +1,73 @@
 # MailSilo
 
-**Archivador de correos autogestionado** — Liberá espacio en la nube, evitá suscripciones caras y buscá tus correos localmente.
+**Self-hosted email archiver** — Free up cloud space, avoid expensive subscriptions, and search your emails locally.
 
-MailSilo es una solución de código abierto para respaldar, organizar y proteger tus correos electrónicos de forma local. Descarga desde cualquier servidor IMAP o importa archivos (EML, PST, OST, MBOX) a PostgreSQL, con una interfaz web rápida y búsqueda instantánea. La alternativa perfecta para no pagar de más por gigabytes extras en Google Workspace, Microsoft 365 o iCloud.
+MailSilo is an open-source solution to back up, organize, and protect your emails locally. Download from any IMAP server or import files (EML, PST, OST, MBOX) into PostgreSQL, with a fast web interface and instant search. The perfect alternative to avoid paying extra for additional gigabytes in Google Workspace, Microsoft 365, or iCloud.
 
-## Características
+## Features
 
-- 📥 **Sincronización IMAP** — descarga automática desde cualquier servidor IMAP
-- 🔄 **Sincronización programada** — por cuenta (6h, 12h, 24h, 7d, 30d)
-- 🔵 **OAuth Microsoft** — Outlook / Hotmail con OAuth 2.0
-- 📄 **Importación EML** — archivos `.eml` individuales o en lote
-- 🗂 **Importación PST / OST** — archivos de Outlook (requiere `readpst`)
-- 📦 **Importación MBOX** — archivos mbox con progreso en tiempo real
-- 🔍 **Búsqueda de texto completo** — por asunto, remitente o cuerpo (PostgreSQL FTS + LIKE)
-- 📤 **Reenvío SMTP** — reenviá correos archivados a destinatarios externos
-- 📦 **Exportación MBOX** — exportá por cuenta, búsqueda o selección
-- 🗑 **Borrado masivo** — seleccioná y eliminá múltiples correos
-- 🌐 **Interfaz web** — SPA con JavaScript vanilla, sidebar, modo oscuro/claro
-- 👥 **Multi-cuenta** — administrá múltiples cuentas de correo
-- 🔐 **Autenticación opcional** — protección con contraseña (bcrypt)
-- 🔒 **Contraseñas cifradas** — credenciales almacenadas cifradas con Fernet
-- 🐳 **Docker** — despliegue con un solo comando
+- 📥 **IMAP sync** — automatic download from any IMAP server
+- 🔄 **Scheduled sync** — per account (6h, 12h, 24h, 7d, 30d)
+- 🔵 **Microsoft OAuth** — Outlook / Hotmail with OAuth 2.0
+- 📄 **EML import** — single or batch `.eml` files
+- 🗂 **PST / OST import** — Outlook files (requires `readpst`)
+- 📦 **MBOX import** — mbox files with real-time progress
+- 🔍 **Full-text search** — by subject, sender or body (PostgreSQL FTS + LIKE)
+- 📤 **SMTP forwarding** — forward archived emails to external recipients
+- 📦 **MBOX export** — export by account, search or selection
+- 🗑 **Bulk delete** — select and delete multiple emails
+- 🌐 **Web interface** — vanilla JS SPA with sidebar, dark/light mode
+- 👥 **Multi-account** — manage multiple email accounts
+- 🔐 **Optional authentication** — password protection (bcrypt)
+- 🔒 **Encrypted passwords** — credentials stored encrypted with Fernet
+- 🐳 **Docker** — single-command deployment
 
-## Requisitos
+## Requirements
 
-- Docker y Docker Compose
-- PostgreSQL (se inicia automáticamente con docker compose)
-- `readpst` (para importar PST/OST — incluido en la imagen Docker)
+- Docker and Docker Compose
+- PostgreSQL (starts automatically with docker compose)
+- `readpst` (for PST/OST import — included in the Docker image)
 
-## Inicio rápido
+## Quick start
 
 ```bash
-# Iniciar con valores predeterminados (sin configuración previa)
+# Start with default values (no prior setup)
 docker compose up -d
 ```
 
-Abrí http://localhost:8765
+Open http://localhost:8765
 
-En la primera ejecución se te pedirá crear un usuario administrador.
+On first run you will be prompted to create an admin user.
 
-### Configuración personalizada (opcional)
+### Custom configuration (optional)
 
 ```bash
 cp .env.example .env
-# Editá .env si necesitas credenciales personalizadas de PostgreSQL o un Tunnel de Cloudflare
+# Edit .env if you need custom PostgreSQL credentials or a Cloudflare Tunnel
 docker compose up -d
 ```
 
-## Configuración
+## Configuration
 
-### Variables de entorno (`.env`)
+### Environment variables (`.env`)
 
-| Variable | Descripción | Por defecto |
+| Variable | Description | Default |
 |---|---|---|
-| `POSTGRES_PASSWORD` | Contraseña de PostgreSQL | `mailsilo_local_dev` |
-| `POSTGRES_DB` | Nombre de la base de datos | `mailsilo` |
-| `POSTGRES_USER` | Usuario de PostgreSQL | `mailsilo` |
-| `TUNNEL_TOKEN` | Token de Cloudflare Tunnel (opcional) | — |
+| `POSTGRES_PASSWORD` | PostgreSQL password | `mailsilo_local_dev` |
+| `POSTGRES_DB` | Database name | `mailsilo` |
+| `POSTGRES_USER` | PostgreSQL user | `mailsilo` |
+| `TUNNEL_TOKEN` | Cloudflare Tunnel token (optional) | — |
 
-### Proxy inverso (NGINX, Caddy, etc.)
+### Reverse proxy (NGINX, Caddy, etc.)
 
-MailSilo corre en el puerto `8765`. Podés ponerlo detrás de un reverse proxy:
+MailSilo runs on port `8765`. You can put it behind a reverse proxy:
 
 #### NGINX
 
 ```nginx
 server {
     listen 80;
-    server_name mailsilo.tudominio.com;
+    server_name mailsilo.yourdomain.com;
 
     client_max_body_size 10G;
 
@@ -89,79 +89,79 @@ server {
 #### Caddy
 
 ```
-mailsilo.tudominio.com {
+mailsilo.yourdomain.com {
     reverse_proxy 127.0.0.1:8765
 }
 ```
 
-Caddy maneja HTTPS automático con Let's Encrypt. Para NGINX agregá un bloque `listen 443 ssl` con tus certificados.
+Caddy handles automatic HTTPS with Let's Encrypt. For NGINX, add a `listen 443 ssl` block with your certificates.
 
-## Importación de correos
+## Email import
 
-| Formato | Extensión | Lote | Progreso |
+| Format | Extension | Batch | Progress |
 |---|---|---|---|
-| EML | `.eml` | ✅ múltiples archivos | ✅ |
-| PST | `.pst` | ✅ secuencial | ✅ en tiempo real |
-| OST | `.ost` | ✅ secuencial | ✅ en tiempo real |
-| MBOX | `.mbox` | ✅ secuencial | ✅ en tiempo real |
+| EML | `.eml` | ✅ multiple files | ✅ |
+| PST | `.pst` | ✅ sequential | ✅ real-time |
+| OST | `.ost` | ✅ sequential | ✅ real-time |
+| MBOX | `.mbox` | ✅ sequential | ✅ real-time |
 
-Los archivos grandes se procesan en segundo plano con barra de progreso en el sidebar. Si la conexión se pierde durante la subida, el cliente recupera la tarea automáticamente.
+Large files are processed in the background with a progress bar in the sidebar. If the connection drops during upload, the client automatically recovers the task.
 
-## Reenvío SMTP
+## SMTP forwarding
 
-Configurá un servidor SMTP en Ajustes → Reenvío de correos (SMTP). Compatible con Gmail, Outlook, iCloud, Yahoo y cualquier SMTP genérico (puerto 587 con TLS o 465 sin TLS). Incluye botón de prueba para verificar las credenciales.
+Configure an SMTP server in Settings → Email forwarding (SMTP). Compatible with Gmail, Outlook, iCloud, Yahoo and any generic SMTP (port 587 with TLS or 465 without TLS). Includes a test button to verify credentials.
 
-## Seguridad
+## Security
 
-- Las contraseñas IMAP y SMTP se cifran con **Fernet** (cryptography)
-- La clave de cifrado se genera automáticamente en la primera ejecución
-- Autenticación opcional con bcrypt
-- Las cuentas importadas se marcan como `is_imported` y no intentan sincronizar
+- IMAP and SMTP passwords are encrypted with **Fernet** (cryptography)
+- The encryption key is automatically generated on first run
+- Optional authentication with bcrypt
+- Imported accounts are marked as `is_imported` and won't attempt to sync
 
-## Desarrollo
+## Development
 
 ```bash
 git clone ...
 cd mailsilo
 pip install -e .
-# Requiere una instancia de PostgreSQL corriendo
+# Requires a running PostgreSQL instance
 uvicorn app.main:app --reload --port 8765
 ```
 
-## Estructura del proyecto
+## Project structure
 
 ```
 app/
-├── api/           # Endpoints FastAPI
+├── api/           # FastAPI endpoints
 │   ├── accounts.py
 │   ├── emails.py
 │   ├── imports.py
 │   ├── settings.py
 │   └── ...
-├── importers/     # Motores de importación
+├── importers/     # Import engines
 │   ├── eml.py
 │   ├── mbox.py
 │   ├── pst.py
 │   └── ...
-├── imap/          # Motor de sincronización IMAP
-├── models/        # Modelos SQLAlchemy
-├── services/      # Lógica de negocio
-├── static/        # Frontend (JavaScript vanilla + CSS)
-├── templates/     # Plantillas HTML
-├── crypto.py      # Cifrado Fernet
-├── database.py    # Conexión y migraciones
-└── main.py        # Punto de entrada
+├── imap/          # IMAP sync engine
+├── models/        # SQLAlchemy models
+├── services/      # Business logic
+├── static/        # Frontend (vanilla JavaScript + CSS)
+├── templates/     # HTML templates
+├── crypto.py      # Fernet encryption
+├── database.py    # Connection and migrations
+└── main.py        # Entry point
 ```
 
-## 💰 Apoyá el proyecto
+## 💰 Support the project
 
-MailSilo es un proyecto de código abierto independiente. Si te está ayudando a ahorrar en almacenamiento de correo, considerá apoyar su desarrollo:
+MailSilo is an independent open-source project. If it's helping you save on email storage, consider supporting its development:
 
-- ☕ [Cafecito](https://buymeacoffee.com/cfarias5)
-- 🚀 GitHub Sponsors (próximamente)
+- ☕ [Buy Me a Coffee](https://buymeacoffee.com/cfarias5)
+- 🚀 GitHub Sponsors (coming soon)
 
-*Planes a futuro: aplicación móvil nativa y sincronización en la nube.*
+*Future plans: native mobile app and cloud sync.*
 
-## Licencia
+## License
 
-MIT License — consultá [LICENSE](LICENSE) para más detalles.
+MIT License — see [LICENSE](LICENSE) for details.
