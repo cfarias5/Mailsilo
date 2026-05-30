@@ -32,19 +32,23 @@ MailSilo is an open-source solution to back up, organize, and protect your email
 
 ### Option A — Pull from Docker Hub (recommended)
 
+This is the simplest method. It uses `docker compose` which automatically creates the network, volumes, and starts PostgreSQL:
+
 ```bash
 # 1. Create a .env file (or copy from .env.example)
 cp .env.example .env
 
 # 2. In docker-compose.yaml, change "build: ." to "image: cesarf26/mailsilo:latest"
 
-# 3. Start
+# 3. Start everything (PostgreSQL + MailSilo)
 docker compose up -d
 ```
 
 Open http://localhost:8765
 
 On first run you will be prompted to create an admin user.
+
+> **Note:** Using just `docker run` is not recommended — you'd need to manually set up a PostgreSQL container, create a shared network, and pass the `DATABASE_URL` environment variable. Stick with `docker compose` for a seamless setup.
 
 ### Option B — Build locally
 
