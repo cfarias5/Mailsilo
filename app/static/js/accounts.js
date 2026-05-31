@@ -1171,8 +1171,8 @@ async function processImportFiles(files) {
                 }).catch(() => {
                   if (++retries < 10) setTimeout(findTask, 2000);
                   else reject(new Error("Connection error"));
-
-              reject(new Error("Connection error"));
+                });
+              }
             }
           };
           xhr.timeout = 600000;
