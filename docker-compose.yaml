@@ -39,15 +39,19 @@ services:
       postgres:
         condition: service_healthy
 
-  cloudflare:
-    image: cloudflare/cloudflared:latest
-    container_name: mailsilo-tunnel
-    restart: always
-    command: tunnel run
-    environment:
-      - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
-    networks:
-      - mailsilo
+  # === CLOUDFLARE TUNNEL (opcional) ===
+  # Descomenta las líneas abajo si tienes un túnel Cloudflare
+  # y configura TUNNEL_TOKEN en tu .env
+  #
+  # cloudflare:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: mailsilo-tunnel
+  #   restart: always
+  #   command: tunnel run
+  #   environment:
+  #     - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
+  #   networks:
+  #     - mailsilo
 
 networks:
   mailsilo:
