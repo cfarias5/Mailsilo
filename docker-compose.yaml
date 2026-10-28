@@ -1,0 +1,64 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5477:5432"
+    container_name: mailsilo-db
+    environment:
+      POSTGRES_DB: mailsilo
+      POSTGRES_USER: mailsilo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mailsilo_local_dev}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - mailsilo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mailsilo"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mailsilo:
+    # Use pre-built image from Docker Hub (recommended for most users)
+    image: cfarias5/mailsilo:latest
+    # Or build from source (uncomment below and comment the line above):
+    # build: .
+    container_name: mailsilo
+    ports:
+      - "8765:8765"
+    environment:
+      - DATABASE_URL=postgresql://mailsilo:${POSTGRES_PASSWORD:-mailsilo_local_dev}@postgres:5432/mailsilo
+    volumes:
+      - mailsilo_data:/app/data
+      - attachments_data:/app/storage/attachments
+    restart: unless-stopped
+    networks:
+      - mailsilo
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # === CLOUDFLARE TUNNEL (opcional) ===
+  # Descomenta las líneas abajo si tienes un túnel Cloudflare
+  # y configura TUNNEL_TOKEN en tu .env
+  #
+  # cloudflare:
+  #   image: cloudflare/cloudflared:latest
+  #   container_name: mailsilo-tunnel
+  #   restart: always
+  #   command: tunnel run
+  #   environment:
+  #     - TUNNEL_TOKEN=${TUNNEL_TOKEN:-}
+  #   networks:
+  #     - mailsilo
+
+networks:
+  mailsilo:
+    name: mailsilo
+    driver: bridge
+
+volumes:
+  postgres_data:
+  mailsilo_data:
+  attachments_data:
