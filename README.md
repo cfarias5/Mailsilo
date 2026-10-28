@@ -75,7 +75,6 @@ docker compose up -d
 | `POSTGRES_DB` | Database name | `mailsilo` |
 | `POSTGRES_USER` | PostgreSQL user | `mailsilo` |
 | `TUNNEL_TOKEN` | Cloudflare Tunnel token (optional) | — |
-| `ATTACHMENT_STORAGE` | Directory where attachments are stored | `/app/storage/attachments` |
 
 ### Reverse proxy (NGINX, Caddy, etc.)
 
@@ -137,48 +136,6 @@ Configure an SMTP server in Settings → Email forwarding (SMTP). Compatible wit
 - Optional authentication with bcrypt
 - Imported accounts are marked as `is_imported` and won't attempt to sync
 
-## Development
-
-```bash
-git clone ...
-cd mailsilo
-pip install -e .
-# Requires a running PostgreSQL instance
-uvicorn app.main:app --reload --port 8765
-```
-
-### Tests
-
-```bash
-pip install -e . pytest
-
-# Fast suite using a temporary SQLite database
-pytest
-
-# Run against a real PostgreSQL instance (recommended before releasing)
-TEST_DATABASE_URL=postgresql+psycopg2://mailsilo:secret@localhost:5432/mailsilo_test pytest
-```
-
-## Troubleshooting
-
-### A sync finishes as "partial" or stops before downloading everything
-
-Syncing is not all-or-nothing: if one folder fails, everything already archived is
-kept and the UI shows a `partial` status with the reason. The next sync resumes
-from the last stored UID, so pressing "Sync" again continues where it stopped.
-
-The most common causes are:
-
-- **Disk full or quota exceeded**: check `df -h` and the size of the PostgreSQL
-  and attachments volumes.
-- **Permissions**: `/app/storage/attachments` must be writable by the process.
-- **Invalid attachment names**: names are sanitized and truncated automatically.
-  If a specific attachment cannot be saved, a warning is logged and the email is
-  kept with the attachment stored in the database.
-
-When the status is `error`, the message includes the original `errno` (for example
-`[Errno 28] No space left on device`), which usually identifies the cause.
-
 ## Project structure
 
 ```
@@ -202,8 +159,6 @@ app/
 ├── crypto.py      # Fernet encryption
 ├── database.py    # Connection and migrations
 └── main.py        # Entry point
-
-tests/             # Suite de tests (pytest)
 ```
 
 ## 💰 Support the project

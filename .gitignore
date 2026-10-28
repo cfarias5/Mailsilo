@@ -10,4 +10,5 @@ storage/
 attachments/
 .pytest_cache/
 .ruff_cache/
+tests/
 attachments/
