@@ -21,7 +21,7 @@ services:
 
   mailsilo:
     # Use pre-built image from Docker Hub (recommended for most users)
-    image: cfarias5/mailsilo:latest
+    image: ghcr.io/cfarias5/mailsilo:latest
     # Or build from source (uncomment below and comment the line above):
     # build: .
     container_name: mailsilo
